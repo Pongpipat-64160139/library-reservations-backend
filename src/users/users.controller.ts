@@ -24,20 +24,14 @@ export class UsersController {
       const user = await this.usersService.create(createUserDto);
       return { message: 'Create user successfully!!', data: user };
     } catch (error) {
-      // ตรวจสอบข้อผิดพลาดที่เกิดจาก Unique Constraint
-      if (error.code === '23505') {
-        const conflictfield = error.detail.includes('email')
-          ? 'email'
-          : 'username';
-        throw new HttpException(
-          {
-            statusCode: HttpStatus.BAD_REQUEST,
-            message: `${conflictfield} already exists`,
-            error: 'Bad Request',
-          },
-          HttpStatus.BAD_REQUEST,
-        );
-      }
+      console.log(error);
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.BAD_REQUEST,
+          message: 'Username หรือ Email ซ้ำกัน!!!',
+        },
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 

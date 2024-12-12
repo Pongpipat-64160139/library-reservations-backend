@@ -1,12 +1,13 @@
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   userId: number;
 
-  @Column({ unique: true, nullable: false })
+  @Column({ nullable: false })
+  @Index('unique_username', { unique: true })
   username: string;
 
   @Column()
@@ -19,7 +20,8 @@ export class User {
   @Column({ length: 255 })
   lastName: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ nullable: true })
+  @Index('unique_email', { unique: true })
   @IsEmail()
   email: string;
 }

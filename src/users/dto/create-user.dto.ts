@@ -2,6 +2,7 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
+  IsUUID,
   Length,
   Max,
   Min,
@@ -10,12 +11,12 @@ import {
 
 export class CreateUserDto {
   @IsString()
-  @IsNotEmpty({ message: 'Username is required' })
+  @IsNotEmpty({ message: 'User name is required' })
   username: string;
 
   @IsString()
-  @IsNotEmpty({ message: 'Password is required' })
-  @MinLength(6)
+  @IsNotEmpty()
+  @MinLength(6, { message: 'Password ต้องไม่น้อยกว่า 6' })
   password: string;
 
   @IsString()
@@ -28,6 +29,6 @@ export class CreateUserDto {
 
   @IsString()
   @IsEmail()
-  @IsNotEmpty({ message: 'Email must be a valid email address' })
+  @IsNotEmpty({ message: 'Email address is required' })
   email: string;
 }
