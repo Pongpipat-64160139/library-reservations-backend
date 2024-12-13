@@ -22,7 +22,9 @@ export class UsersService {
       const newUser = await this.userRepository.create(createUserDto);
       return this.userRepository.save(newUser);
     } catch (error) {
-      return error.message;
+      if (error) {
+        throw new Error(error.message);
+      }
     }
   }
 

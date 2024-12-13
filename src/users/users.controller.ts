@@ -12,7 +12,6 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { STATUS_CODES } from 'http';
 
 @Controller('users')
 export class UsersController {
@@ -24,14 +23,15 @@ export class UsersController {
       const user = await this.usersService.create(createUserDto);
       return { message: 'Create user successfully!!', data: user };
     } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Username หรือ Email ซ้ำกัน!!!',
-        },
-        HttpStatus.BAD_REQUEST,
-      );
+      if (error.code == 'ER_DUP_ENTRY') {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.CONFLICT,
+            message: `Duplicate value detected : ${error.sqlMessage} is already exists in the entity users.`,
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
     }
   }
 
@@ -41,8 +41,19 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const findValue = await this.usersService.findOne(+id);
+    if (findValue) {
+      return findValue;
+    } else {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: `User with id ${id} not found`,
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   @Patch(':id')
@@ -52,6 +63,7 @@ export class UsersController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+    this.usersService.remove(+id);
+    return 'Deleted successfully';
   }
 }
