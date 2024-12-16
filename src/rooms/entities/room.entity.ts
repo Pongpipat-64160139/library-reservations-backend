@@ -13,9 +13,9 @@ export class Room {
   capacity: number;
 
   @Column()
-  Max_hours: number;
+  max_hours: number;
 
-  @Column()
+  @Column({ type: 'enum', enum: ['ว่าง', 'ไม่ว่าง', 'จอง'], default: ['ว่าง'] })
   room_Status: string;
 
   @Column()

@@ -1,4 +1,5 @@
 import { isNotEmpty, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Room } from 'src/rooms/entities/room.entity';
 
 export class CreateFloorDto {
   @IsNumber()
@@ -13,4 +14,6 @@ export class CreateFloorDto {
 
   @IsNotEmpty({ message: 'Close time is required' })
   closedTime: string;
+
+  roomIds: Room[];
 }
