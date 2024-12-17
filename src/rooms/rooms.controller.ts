@@ -18,8 +18,12 @@ export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   @Post()
-  create(@Body() createRoomDto: CreateRoomDto) {
-    return this.roomsService.create(createRoomDto);
+  async create(@Body() createRoomDto: CreateRoomDto) {
+    // สร้างห้อง
+    const newRoom = this.roomsService.create(createRoomDto);
+    // อัพเดทห้อง
+    await this.roomsService.countRoomsByFloor();
+    return newRoom;
   }
 
   @Get()
@@ -27,6 +31,10 @@ export class RoomsController {
     return this.roomsService.findAll();
   }
 
+  @Get('/count-rooms')
+  countRoomsByFloor() {
+    return this.roomsService.countRoomsByFloor();
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(+id);
@@ -38,7 +46,11 @@ export class RoomsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.roomsService.remove(+id);
+  async remove(@Param('id') id: string) {
+    // ลบห้อง
+    this.roomsService.remove(+id);
+    // // อัพเดทห้อง
+    await this.roomsService.countRoomsByFloor();
+    return {message:'Room deleted successfully'}
   }
 }
