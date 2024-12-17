@@ -8,6 +8,7 @@ import {
   Delete,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -35,6 +36,11 @@ export class RoomsController {
   countRoomsByFloor() {
     return this.roomsService.countRoomsByFloor();
   }
+  @Get('/get-roomType')
+  async GetRoomByType(@Query() roomType: string) {
+    console.log('Received roomType:', roomType); // ตรวจสอบค่าที่รับเข้ามา
+    return await this.roomsService.GetRoomByType(roomType);
+  }
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(+id);
@@ -51,6 +57,6 @@ export class RoomsController {
     this.roomsService.remove(+id);
     // // อัพเดทห้อง
     await this.roomsService.countRoomsByFloor();
-    return {message:'Room deleted successfully'}
+    return { message: 'Room deleted successfully' };
   }
 }
