@@ -1,5 +1,12 @@
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
-import { Column, Entity, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
+import {
+  Column,
+  Entity,
+  Index,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class User {
@@ -24,4 +31,7 @@ export class User {
   @Index('unique_email', { unique: true })
   @IsEmail()
   email: string;
+
+  @OneToMany(() => RoleAssignment, (roleAss) => roleAss.user)
+  roleAssignments: RoleAssignment[];
 }

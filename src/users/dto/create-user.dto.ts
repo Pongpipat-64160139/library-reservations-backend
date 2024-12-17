@@ -8,6 +8,7 @@ import {
   Min,
   MinLength,
 } from 'class-validator';
+import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
 
 export class CreateUserDto {
   @IsString()
@@ -31,4 +32,6 @@ export class CreateUserDto {
   @IsEmail()
   @IsNotEmpty({ message: 'Email address is required' })
   email: string;
+
+  roleAssignmentId: RoleAssignment[];
 }

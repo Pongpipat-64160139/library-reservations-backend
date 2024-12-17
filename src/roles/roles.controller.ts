@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+} from '@nestjs/common';
 import { RolesService } from './roles.service';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -8,8 +18,21 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  create(@Body() createRoleDto: CreateRoleDto) {
-    return this.rolesService.create(createRoleDto);
+  async create(@Body() createRoleDto: CreateRoleDto) {
+    try {
+      const newRole = await this.rolesService.create(createRoleDto);
+      return { message: 'Created role sucessfully', data: newRole };
+    } catch (error) {
+      if (error.code == 'ER_DUP_ENTRY') {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.CONFLICT,
+            error: 'Role with this name already exists',
+          },
+          HttpStatus.CONFLICT,
+        );
+      }
+    }
   }
 
   @Get()
