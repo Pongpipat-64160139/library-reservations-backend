@@ -12,6 +12,8 @@ import { FloorsModule } from './floors/floors.module';
 import { Floor } from './floors/entities/floor.entity';
 import { RoomsModule } from './rooms/rooms.module';
 import { Room } from './rooms/entities/room.entity';
+import { ConfirmationsModule } from './confirmations/confirmations.module';
+import { Confirmation } from './confirmations/entities/confirmation.entity';
 
 @Module({
   imports: [
@@ -21,7 +23,7 @@ import { Room } from './rooms/entities/room.entity';
       port: 3306,
       username: 'root',
       database: 'buu_library_booking',
-      entities: [User, Role, RoleAssignment, Floor, Room],
+      entities: [User, Role, RoleAssignment, Floor, Room, Confirmation],
       synchronize: true,
     }),
     UsersModule,
@@ -29,6 +31,7 @@ import { Room } from './rooms/entities/room.entity';
     RoleAssignmentsModule,
     FloorsModule,
     RoomsModule,
+    ConfirmationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,6 @@
+import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { Floor } from 'src/floors/entities/floor.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Room {
@@ -29,4 +30,7 @@ export class Room {
 
   @ManyToOne(() => Floor, (floor) => floor.rooms)
   floor: Floor;
+
+  @OneToMany(()=> Confirmation, (confirmation) => confirmation.room)
+  confirmations: Confirmation[];
 }

@@ -1,3 +1,4 @@
+import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
 import {
   Column,
@@ -21,4 +22,8 @@ export class Role {
 
   @OneToMany(() => RoleAssignment, (roleAss) => roleAss.role)
   roleAssignments: RoleAssignment[];
+
+
+  @OneToMany(()=> Confirmation , (confirm)=> confirm.role)
+  confirmations: Confirmation[]
 }

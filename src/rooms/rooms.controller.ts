@@ -38,7 +38,28 @@ export class RoomsController {
   }
   @Get('/get-roomType')
   async GetRoomByType(@Query('roomType') roomType: string) {
-    return await this.roomsService.GetRoomByType(roomType);
+    try {
+      const findRoomType = await this.roomsService.GetRoomByType(roomType);
+      if (findRoomType.length <= 0) {
+        throw new HttpException(
+          {
+            statusCode: HttpStatus.NOT_FOUND,
+            message: 'Room type not found',
+          },
+          HttpStatus.NOT_FOUND,
+        );
+      } else {
+        return findRoomType;
+      }
+    } catch (error) {
+      throw new HttpException(
+        {
+          statusCode: HttpStatus.NOT_FOUND,
+          message: 'Room type not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
   @Get(':id')

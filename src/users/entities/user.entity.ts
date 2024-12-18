@@ -1,4 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
+import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
 import {
   Column,
@@ -34,4 +35,8 @@ export class User {
 
   @OneToMany(() => RoleAssignment, (roleAss) => roleAss.user)
   roleAssignments: RoleAssignment[];
+
+
+  @OneToMany(()=> Confirmation, (confirm)=> confirm.user)
+  confirmations: Confirmation[];
 }
