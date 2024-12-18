@@ -37,10 +37,10 @@ export class RoomsController {
     return this.roomsService.countRoomsByFloor();
   }
   @Get('/get-roomType')
-  async GetRoomByType(@Query() roomType: string) {
-    console.log('Received roomType:', roomType); // ตรวจสอบค่าที่รับเข้ามา
+  async GetRoomByType(@Query('roomType') roomType: string) {
     return await this.roomsService.GetRoomByType(roomType);
   }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.roomsService.findOne(+id);

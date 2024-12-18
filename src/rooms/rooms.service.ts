@@ -129,14 +129,16 @@ export class RoomsService {
     return { message: 'Room deleted successfully' };
   }
   async GetRoomByType(roomType: string) {
-    console.log('Received roomType:', roomType); // ตรวจสอบค่าที่รับเข้ามา
     const result = await this.roomRepository
       .createQueryBuilder('room')
       .innerJoin('room.floor', 'floor')
-      .select(['floor.floor_number', 'room.room_Name', 'room.room_Type'])
+      .select([
+        'floor.floor_number AS floorNumber', // เพิ่ม Alias ให้ floor_number
+        'room.room_Name AS roomName', // เพิ่ม Alias ให้ room_Name
+        'room.room_Type AS roomType', // เพิ่ม Alias ให้ room_Type
+      ])
       .where('room.room_Type = :roomType', { roomType: `${roomType}` })
-      .getMany();
-    console.log(result);
+      .getRawMany();
     return result;
   }
 }
