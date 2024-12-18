@@ -1,6 +1,13 @@
 import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { Floor } from 'src/floors/entities/floor.entity';
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { NormalRoomBooking } from 'src/normal-room-booking/entities/normal-room-booking.entity';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Room {
@@ -31,6 +38,11 @@ export class Room {
   @ManyToOne(() => Floor, (floor) => floor.rooms)
   floor: Floor;
 
-  @OneToMany(()=> Confirmation, (confirmation) => confirmation.room)
+  @OneToMany(() => Confirmation, (confirmation) => confirmation.room)
   confirmations: Confirmation[];
+
+  @OneToMany(() => NormalRoomBooking, (nrb) => nrb.roomBooking, {
+    nullable: false,
+  })
+  normalRoomBookings: NormalRoomBooking[];
 }

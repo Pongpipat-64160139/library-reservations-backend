@@ -5,9 +5,12 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
 import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
+import { UserBooking } from 'src/user-bookings/entities/user-booking.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, RoleAssignment, Confirmation])],
+  imports: [
+    TypeOrmModule.forFeature([User, RoleAssignment, Confirmation, UserBooking]),
+  ],
   exports: [UsersService],
   controllers: [UsersController],
   providers: [UsersService],

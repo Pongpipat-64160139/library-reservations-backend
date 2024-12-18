@@ -111,16 +111,18 @@ export class RoleAssignmentsService {
     const roleAssignment = await this.roleAssignmentRepository.findOne({
       where: { roleAssId: id },
     });
-  
+
     // ตรวจสอบว่ามี RoleAssignment หรือไม่
     if (!roleAssignment) {
       throw new NotFoundException(`RoleAssignment with ID ${id} not found`);
     }
-  
+
     // ลบข้อมูล
     try {
       await this.roleAssignmentRepository.remove(roleAssignment);
-      return { message: `RoleAssignment with ID ${id} has been removed successfully` };
+      return {
+        message: `RoleAssignment with ID ${id} has been removed successfully`,
+      };
     } catch (error) {
       throw new InternalServerErrorException(
         `Failed to remove RoleAssignment with ID ${id}`,
@@ -128,5 +130,4 @@ export class RoleAssignmentsService {
       );
     }
   }
-  
 }

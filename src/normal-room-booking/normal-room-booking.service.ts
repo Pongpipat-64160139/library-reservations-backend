@@ -1,0 +1,142 @@
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
+import { CreateNormalRoomBookingDto } from './dto/create-normal-room-booking.dto';
+import { UpdateNormalRoomBookingDto } from './dto/update-normal-room-booking.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Room } from 'src/rooms/entities/room.entity';
+import { Repository } from 'typeorm';
+import { NormalRoomBooking } from './entities/normal-room-booking.entity';
+
+@Injectable()
+export class NormalRoomBookingService {
+  constructor(
+    @InjectRepository(Room)
+    private roomRepository: Repository<Room>,
+    @InjectRepository(NormalRoomBooking)
+    private normalRoomBookingRepository: Repository<NormalRoomBooking>,
+  ) {}
+  async create(createNormalRoomBookingDto: CreateNormalRoomBookingDto) {
+    const { roomId, ...dataNormal } = createNormalRoomBookingDto;
+
+    // ตรวจสอบว่ามีห้อง (Room) ที่อ้างถึงหรือไม่
+    const room = await this.roomRepository.findOne({
+      where: { roomId: roomId },
+    });
+
+    if (!room) {
+      // โยนข้อผิดพลาดเมื่อไม่พบ Room
+      throw new NotFoundException(`Room with ID ${roomId} not found`);
+    }
+
+    try {
+      // สร้าง NormalRoomBooking ใหม่
+      const newNRBBooking = this.normalRoomBookingRepository.create({
+        startDate: dataNormal.startDate,
+        startTime: dataNormal.startTime,
+        endDate: dataNormal.endDate,
+        endTime: dataNormal.endTime,
+        repeat_Flag: dataNormal.repeat_Flag,
+        repeat_End_Flag: dataNormal.repeat_End_Flag,
+        details: dataNormal.details,
+        roomBooking: room, // เชื่อมความสัมพันธ์กับ Room
+      });
+
+      // บันทึกข้อมูลลงฐานข้อมูล
+      const savedRoomBooking =
+        await this.normalRoomBookingRepository.save(newNRBBooking);
+
+      return savedRoomBooking; // ส่งผลลัพธ์กลับ
+    } catch (error) {
+      // จัดการข้อผิดพลาดที่เกิดขึ้นระหว่างการบันทึก
+      throw new InternalServerErrorException(
+        'Failed to create normal room booking',
+        error.message,
+      );
+    }
+  }
+
+  findAll() {
+    return this.normalRoomBookingRepository.find({
+      relations: ['roomBooking'],
+    });
+  }
+
+  async findOne(id: number) {
+    // ค้นหา NormalRoomBooking จาก id
+    const booking = await this.normalRoomBookingRepository.findOne({
+      where: { nrbId: id },
+      relations: ['roomBooking'], // โหลดความสัมพันธ์กับ RoomBooking
+    });
+
+    // หากไม่พบข้อมูล ให้โยน NotFoundException
+    if (!booking) {
+      throw new NotFoundException(`NormalRoomBooking with ID ${id} not found`);
+    }
+
+    // คืนค่าข้อมูลเมื่อพบ
+    return booking;
+  }
+
+  async update(
+    id: number,
+    updateNormalRoomBookingDto: UpdateNormalRoomBookingDto,
+  ) {
+    // ตรวจสอบว่ามีข้อมูลที่ต้องการอัปเดตหรือไม่
+    const findBooking = await this.normalRoomBookingRepository.findOne({
+      where: { nrbId: id },
+      relations: ['roomBooking'],
+    });
+
+    if (!findBooking) {
+      throw new NotFoundException(`NormalRoomBooking with ID ${id} not found`);
+    }
+
+    try {
+      // อัปเดตข้อมูลด้วย DTO
+      await this.normalRoomBookingRepository.update(
+        id,
+        updateNormalRoomBookingDto,
+      );
+
+      // คืนค่าข้อมูลที่อัปเดตพร้อมความสัมพันธ์
+      return await this.normalRoomBookingRepository.findOne({
+        where: { nrbId: id },
+        relations: ['roomBooking'],
+      });
+    } catch (error) {
+      // จัดการข้อผิดพลาดที่เกิดขึ้น
+      throw new InternalServerErrorException(
+        `Failed to update NormalRoomBooking with ID ${id}`,
+        error.message,
+      );
+    }
+  }
+
+  async remove(id: number) {
+    // ตรวจสอบว่ามีข้อมูลที่ต้องการลบหรือไม่
+    const booking = await this.normalRoomBookingRepository.findOne({
+      where: { nrbId: id },
+    });
+
+    if (!booking) {
+      throw new NotFoundException(`NormalRoomBooking with ID ${id} not found`);
+    }
+
+    try {
+      // ลบข้อมูล
+      await this.normalRoomBookingRepository.delete(id);
+      return {
+        message: `NormalRoomBooking with ID ${id} deleted successfully`,
+      };
+    } catch (error) {
+      // จัดการข้อผิดพลาดที่อาจเกิดขึ้น
+      throw new InternalServerErrorException(
+        `Failed to delete NormalRoomBooking with ID ${id}`,
+        error.message,
+      );
+    }
+  }
+}

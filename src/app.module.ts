@@ -14,6 +14,11 @@ import { RoomsModule } from './rooms/rooms.module';
 import { Room } from './rooms/entities/room.entity';
 import { ConfirmationsModule } from './confirmations/confirmations.module';
 import { Confirmation } from './confirmations/entities/confirmation.entity';
+import { NormalRoomBookingModule } from './normal-room-booking/normal-room-booking.module';
+import { UserBookingsModule } from './user-bookings/user-bookings.module';
+import { ParticipantsModule } from './participants/participants.module';
+import { NormalRoomBooking } from './normal-room-booking/entities/normal-room-booking.entity';
+import { UserBooking } from './user-bookings/entities/user-booking.entity';
 
 @Module({
   imports: [
@@ -23,7 +28,16 @@ import { Confirmation } from './confirmations/entities/confirmation.entity';
       port: 3306,
       username: 'root',
       database: 'buu_library_booking',
-      entities: [User, Role, RoleAssignment, Floor, Room, Confirmation],
+      entities: [
+        User,
+        Role,
+        RoleAssignment,
+        Floor,
+        Room,
+        Confirmation,
+        NormalRoomBooking,
+        UserBooking
+      ],
       synchronize: true,
     }),
     UsersModule,
@@ -32,6 +46,9 @@ import { Confirmation } from './confirmations/entities/confirmation.entity';
     FloorsModule,
     RoomsModule,
     ConfirmationsModule,
+    NormalRoomBookingModule,
+    UserBookingsModule,
+    ParticipantsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
