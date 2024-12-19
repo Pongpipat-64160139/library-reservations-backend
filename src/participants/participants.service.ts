@@ -19,21 +19,44 @@ export class ParticipantsService {
     const findUserBooking = await this.userBookingRepository.findOne({
       where: { userbooking_Id: userbookingId },
     });
+    const newParticipant = await this.participantRepository.create({
+      fullName: dataparticipat.fullName,
+      userbooking: findUserBooking,
+    });
+    return await this.participantRepository.save(newParticipant);
   }
 
   findAll() {
-    return `This action returns all participants`;
+    return this.participantRepository.find({ relations: ['userbooking'] });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} participant`;
+    return this.participantRepository.findOne({
+      where: { participant_ID: id },
+      relations: ['userbooking'],
+    });
   }
 
-  update(id: number, updateParticipantDto: UpdateParticipantDto) {
-    return `This action updates a #${id} participant`;
+  async update(id: number, updateParticipantDto: UpdateParticipantDto) {
+    const participant = await this.participantRepository.findOne({
+      where: { participant_ID: id },
+    });
+    const updateParticipant = await this.participantRepository.create({
+      fullName: updateParticipantDto.fullName,
+      userbooking: participant.userbooking,
+    });
+    const saveParticipant = await this.participantRepository.update(
+      id,
+      updateParticipant,
+    );
+    return this.participantRepository.findOne({
+      where: { participant_ID: id },
+      relations: ['userbooking'],
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} participant`;
+  async remove(id: number) {
+    await this.participantRepository.delete(id);
+    return `Participant with ID ${id} was deleted.`;
   }
 }
