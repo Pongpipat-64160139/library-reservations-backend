@@ -1,6 +1,7 @@
 import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { Floor } from 'src/floors/entities/floor.entity';
 import { NormalRoomBooking } from 'src/normal-room-booking/entities/normal-room-booking.entity';
+import { RoleRoomAccess } from 'src/role-room-access/entities/role-room-access.entity';
 import {
   Column,
   Entity,
@@ -45,4 +46,8 @@ export class Room {
     nullable: false,
   })
   normalRoomBookings: NormalRoomBooking[];
+
+
+  @OneToMany(()=> RoleRoomAccess, (rra)=> rra.room)
+  roleRoomAccesses: RoleRoomAccess[]
 }

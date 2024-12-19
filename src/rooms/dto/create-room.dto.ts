@@ -1,4 +1,5 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { RoleRoomAccess } from 'src/role-room-access/entities/role-room-access.entity';
 
 export class CreateRoomDto {
   @IsString()
@@ -31,4 +32,6 @@ export class CreateRoomDto {
   @IsNumber()
   @IsNotEmpty({ message: 'Floor ID is required' })
   floorId: number; // ใช้เพื่อเชื่อม Floor
+
+  roleRoomAccess: RoleRoomAccess[]
 }

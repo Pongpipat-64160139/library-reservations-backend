@@ -1,5 +1,6 @@
 import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
+import { RoleRoomAccess } from 'src/role-room-access/entities/role-room-access.entity';
 import {
   Column,
   Entity,
@@ -23,7 +24,9 @@ export class Role {
   @OneToMany(() => RoleAssignment, (roleAss) => roleAss.role)
   roleAssignments: RoleAssignment[];
 
+  @OneToMany(() => Confirmation, (confirm) => confirm.role)
+  confirmations: Confirmation[];
 
-  @OneToMany(()=> Confirmation , (confirm)=> confirm.role)
-  confirmations: Confirmation[]
+  @OneToMany(() => RoleRoomAccess, (rra) => rra.role)
+  roleRoomAccesses: RoleRoomAccess[];
 }

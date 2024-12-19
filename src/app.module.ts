@@ -20,6 +20,8 @@ import { ParticipantsModule } from './participants/participants.module';
 import { NormalRoomBooking } from './normal-room-booking/entities/normal-room-booking.entity';
 import { UserBooking } from './user-bookings/entities/user-booking.entity';
 import { Participant } from './participants/entities/participant.entity';
+import { RoleRoomAccessModule } from './role-room-access/role-room-access.module';
+import { RoleRoomAccess } from './role-room-access/entities/role-room-access.entity';
 
 @Module({
   imports: [
@@ -39,6 +41,7 @@ import { Participant } from './participants/entities/participant.entity';
         NormalRoomBooking,
         UserBooking,
         Participant,
+        RoleRoomAccess,
       ],
       synchronize: true,
     }),
@@ -51,6 +54,7 @@ import { Participant } from './participants/entities/participant.entity';
     NormalRoomBookingModule,
     UserBookingsModule,
     ParticipantsModule,
+    RoleRoomAccessModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
+import { RoleRoomAccess } from 'src/role-room-access/entities/role-room-access.entity';
 
 export class CreateRoleDto {
   @IsString()
@@ -11,4 +12,6 @@ export class CreateRoleDto {
   department: string;
 
   roleAssignmentId: RoleAssignment[];
+
+  roleRoomAccess: RoleRoomAccess[];
 }
