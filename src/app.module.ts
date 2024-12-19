@@ -19,6 +19,7 @@ import { UserBookingsModule } from './user-bookings/user-bookings.module';
 import { ParticipantsModule } from './participants/participants.module';
 import { NormalRoomBooking } from './normal-room-booking/entities/normal-room-booking.entity';
 import { UserBooking } from './user-bookings/entities/user-booking.entity';
+import { Participant } from './participants/entities/participant.entity';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { UserBooking } from './user-bookings/entities/user-booking.entity';
         Room,
         Confirmation,
         NormalRoomBooking,
-        UserBooking
+        UserBooking,
+        Participant,
       ],
       synchronize: true,
     }),
