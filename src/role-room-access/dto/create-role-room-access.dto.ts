@@ -3,9 +3,9 @@ import { IsNotEmpty, IsNumber } from 'class-validator';
 export class CreateRoleRoomAccessDto {
   @IsNumber()
   @IsNotEmpty()
-  room: number;
+  roomId: number;
 
   @IsNumber()
   @IsNotEmpty()
-  role: number;
+  roleId: number;
 }
