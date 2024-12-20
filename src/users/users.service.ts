@@ -29,7 +29,9 @@ export class UsersService {
   }
 
   findAll() {
-    return this.userRepository.find();
+    return this.userRepository.find({
+      relations: ['userBookings', 'confirmations', 'roleAssignments'],
+    });
   }
 
   findOne(id: number) {

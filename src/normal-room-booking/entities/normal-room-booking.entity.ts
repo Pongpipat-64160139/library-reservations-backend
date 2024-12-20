@@ -32,6 +32,13 @@ export class NormalRoomBooking {
   @Column({ type: 'date' })
   repeat_End_Flag: string;
 
+  @Column({
+    type: 'enum',
+    enum: ['รอ', 'อนุมัติ', 'ยกเลิก'],
+    default: 'รอ',
+  })
+  reseve_status: string; // สถานะการจอง
+
   @Column()
   details: string;
 

@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { UserBooking } from 'src/user-bookings/entities/user-booking.entity';
 
 export class CreateNormalRoomBookingDto {
   @IsNotEmpty()
@@ -28,7 +29,12 @@ export class CreateNormalRoomBookingDto {
   @IsString()
   details: string;
 
+  @IsString()
+  reseve_status: string;
+
   @IsNumber()
   @IsNotEmpty()
   roomId: number;
+
+  userBookings: UserBooking[];
 }

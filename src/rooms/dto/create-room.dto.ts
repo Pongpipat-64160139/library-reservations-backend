@@ -1,5 +1,8 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
+import { NormalRoomBooking } from 'src/normal-room-booking/entities/normal-room-booking.entity';
 import { RoleRoomAccess } from 'src/role-room-access/entities/role-room-access.entity';
+import { SpecialRoomBooking } from 'src/special-room-bookings/entities/special-room-booking.entity';
 
 export class CreateRoomDto {
   @IsString()
@@ -14,7 +17,9 @@ export class CreateRoomDto {
   max_hours: number;
 
   @IsString()
-  @IsEnum(['ว่าง', 'ไม่ว่าง', 'จอง'], { message: 'room_Status must be ว่าง, ไม่ว่าง, or จอง' })
+  @IsEnum(['ว่าง', 'ไม่ว่าง', 'จอง'], {
+    message: 'room_Status must be ว่าง, ไม่ว่าง, or จอง',
+  })
   room_Status: string;
 
   @IsString()
@@ -33,5 +38,11 @@ export class CreateRoomDto {
   @IsNotEmpty({ message: 'Floor ID is required' })
   floorId: number; // ใช้เพื่อเชื่อม Floor
 
-  roleRoomAccess: RoleRoomAccess[]
+  roleRoomAccess: RoleRoomAccess[];
+
+  specialRoomBookings: SpecialRoomBooking[];
+
+  confirmations: Confirmation[];
+
+    normalRoomBookings: NormalRoomBooking[];
 }

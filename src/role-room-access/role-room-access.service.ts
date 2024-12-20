@@ -127,16 +127,16 @@ export class RoleRoomAccessService {
     const roleRoomAccess = await this.roleRoomAccessRepository.findOne({
       where: { access_ID: id },
     });
-  
+
     // ตรวจสอบว่าพบ RoleRoomAccess หรือไม่
     if (!roleRoomAccess) {
       throw new NotFoundException(`RoleRoomAccess with ID ${id} not found`);
     }
-  
+
     try {
       // ลบ RoleRoomAccess
       await this.roleRoomAccessRepository.remove(roleRoomAccess);
-  
+
       // ส่งข้อความยืนยันการลบสำเร็จ
       return { message: `RoleRoomAccess with ID ${id} deleted successfully` };
     } catch (error) {
@@ -147,5 +147,4 @@ export class RoleRoomAccessService {
       );
     }
   }
-  
 }

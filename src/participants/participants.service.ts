@@ -49,10 +49,7 @@ export class ParticipantsService {
       id,
       updateParticipant,
     );
-    return this.participantRepository.findOne({
-      where: { participant_ID: id },
-      relations: ['userbooking'],
-    });
+    return saveParticipant;
   }
 
   async remove(id: number) {

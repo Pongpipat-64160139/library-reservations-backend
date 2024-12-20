@@ -22,6 +22,16 @@ import { UserBooking } from './user-bookings/entities/user-booking.entity';
 import { Participant } from './participants/entities/participant.entity';
 import { RoleRoomAccessModule } from './role-room-access/role-room-access.module';
 import { RoleRoomAccess } from './role-room-access/entities/role-room-access.entity';
+import { SpecialRoomBookingsModule } from './special-room-bookings/special-room-bookings.module';
+import { OrderDetailsModule } from './order-details/order-details.module';
+import { DocumentsModule } from './documents/documents.module';
+import { Document } from './documents/entities/document.entity';
+import { SpecialRoomBooking } from './special-room-bookings/entities/special-room-booking.entity';
+import { OrderDetail } from './order-details/entities/order-detail.entity';
+import { EquipmentsModule } from './equipments/equipments.module';
+import { EquipmentBookingModule } from './equipment-booking/equipment-booking.module';
+import { Equipment } from './equipments/entities/equipment.entity';
+import { EquipmentBooking } from './equipment-booking/entities/equipment-booking.entity';
 
 @Module({
   imports: [
@@ -42,6 +52,11 @@ import { RoleRoomAccess } from './role-room-access/entities/role-room-access.ent
         UserBooking,
         Participant,
         RoleRoomAccess,
+        Document,
+        SpecialRoomBooking,
+        OrderDetail,
+        Equipment,
+        EquipmentBooking,
       ],
       synchronize: true,
     }),
@@ -55,6 +70,11 @@ import { RoleRoomAccess } from './role-room-access/entities/role-room-access.ent
     UserBookingsModule,
     ParticipantsModule,
     RoleRoomAccessModule,
+    SpecialRoomBookingsModule,
+    OrderDetailsModule,
+    DocumentsModule,
+    EquipmentsModule,
+    EquipmentBookingModule,
   ],
   controllers: [AppController],
   providers: [AppService],

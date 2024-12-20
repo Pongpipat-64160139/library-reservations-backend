@@ -41,6 +41,7 @@ export class NormalRoomBookingService {
         repeat_Flag: dataNormal.repeat_Flag,
         repeat_End_Flag: dataNormal.repeat_End_Flag,
         details: dataNormal.details,
+        reseve_status: dataNormal.reseve_status,
         roomBooking: room, // เชื่อมความสัมพันธ์กับ Room
       });
 
