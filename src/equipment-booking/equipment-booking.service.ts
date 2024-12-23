@@ -23,13 +23,15 @@ export class EquipmentBookingService {
       where: { eq_Id: equipmnetId },
     });
     if (!equipment) {
-      throw new Error('Equipment not found');
+      throw new NotFoundException(`Equipment ${equipment}not found`);
     }
     const specialRoomBooking = await this.specialRoomBookingRepository.findOne({
       where: { srb_Id: srbId },
     });
-    if (specialRoomBooking) {
-      throw new Error('Special room booking not found');
+    if (!specialRoomBooking) {
+      throw new NotFoundException(
+        `SpecialRoomBooking ${specialRoomBooking} not found`,
+      );
     }
     const newEquipmentBooking = await this.equipmentBookingRepository.create({
       require,

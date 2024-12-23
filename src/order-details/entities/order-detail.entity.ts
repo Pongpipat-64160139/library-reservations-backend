@@ -13,7 +13,7 @@ export class OrderDetail {
   orders_ID: number;
 
   @Column()
-  Serve_Time: number;
+  Serve_Time: string;
 
   @Column()
   Serve_Name: string;

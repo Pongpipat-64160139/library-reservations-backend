@@ -55,15 +55,12 @@ export class OrderDetailsService {
   }
 
   findAll() {
-    return this.orderDetailRepository.find({
-      relations: ['specialRoomBooking'],
-    });
+    return this.orderDetailRepository.find();
   }
 
   findOne(id: number) {
     return this.orderDetailRepository.findOne({
       where: { orders_ID: id },
-      relations: ['specialRoomBooking'],
     });
   }
 

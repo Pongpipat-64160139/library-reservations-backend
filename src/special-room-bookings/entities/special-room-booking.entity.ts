@@ -22,7 +22,7 @@ export class SpecialRoomBooking {
   people_Count: number;
 
   @Column()
-  contract_Number: number;
+  contract_Number: string;
 
   @Column({ type: 'date' })
   start_Date: string;
