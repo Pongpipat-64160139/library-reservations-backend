@@ -7,9 +7,9 @@ export class CreateRoleDto {
   @IsNotEmpty({ message: 'Position is required' })
   position: string;
 
-  @IsString()
-  @IsNotEmpty({ message: 'Department is required' })
-  department: string;
+  // @IsString()
+  // @IsNotEmpty({ message: 'Department is required' })
+  // department: string;
 
   roleAssignmentId: RoleAssignment[];
 

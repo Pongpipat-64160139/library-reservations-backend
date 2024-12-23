@@ -18,8 +18,8 @@ export class Role {
   @Index('unique_position', { unique: true })
   position: string;
 
-  @Column({ nullable: false })
-  department: string;
+  // @Column({ nullable: false })
+  // department: string;
 
   @OneToMany(() => RoleAssignment, (roleAss) => roleAss.role)
   roleAssignments: RoleAssignment[];

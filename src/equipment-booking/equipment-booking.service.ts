@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateEquipmentBookingDto } from './dto/create-equipment-booking.dto';
 import { UpdateEquipmentBookingDto } from './dto/update-equipment-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -18,32 +18,75 @@ export class EquipmentBookingService {
     private equipmentBookingRepository: Repository<EquipmentBooking>,
   ) {}
   async create(createEquipmentBookingDto: CreateEquipmentBookingDto) {
-    const { srbId, equipmnetId, ...data } = createEquipmentBookingDto;
-    const specialRoomBooking = this.specialRoomBookingRepository.findOne({
-      where: { srb_Id: srbId },
-    });
-    const equipment = this.equipmentRepository.findOne({
+    const { srbId, equipmnetId, require } = createEquipmentBookingDto;
+    const equipment = await this.equipmentRepository.findOne({
       where: { eq_Id: equipmnetId },
     });
-
-    const newEquipmentBooking = await this.equipmentBookingRepository.create(
-      {},
-    );
+    if (!equipment) {
+      throw new Error('Equipment not found');
+    }
+    const specialRoomBooking = await this.specialRoomBookingRepository.findOne({
+      where: { srb_Id: srbId },
+    });
+    if (specialRoomBooking) {
+      throw new Error('Special room booking not found');
+    }
+    const newEquipmentBooking = await this.equipmentBookingRepository.create({
+      require,
+      srb: specialRoomBooking,
+      equipmnet: equipment,
+    });
+    const savedEquipmentBooking =
+      await this.equipmentBookingRepository.save(newEquipmentBooking);
+    return savedEquipmentBooking;
   }
 
   findAll() {
-    return `This action returns all equipmentBooking`;
+    return this.equipmentBookingRepository.find({
+      relations: ['equipmnet', 'srb'],
+    });
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} equipmentBooking`;
+    return this.equipmentBookingRepository.findOne({
+      where: { eqb_Id: id },
+      relations: ['equipmnet', 'srb'],
+    });
   }
 
-  update(id: number, updateEquipmentBookingDto: UpdateEquipmentBookingDto) {
-    return `This action updates a #${id} equipmentBooking`;
+  async update(
+    id: number,
+    updateEquipmentBookingDto: UpdateEquipmentBookingDto,
+  ) {
+    const specialRoomBooking = await this.specialRoomBookingRepository.findOne({
+      where: { srb_Id: updateEquipmentBookingDto.srbId },
+    });
+    if (!specialRoomBooking) {
+      throw new NotFoundException(
+        `SpecialRoomBooking id ${updateEquipmentBookingDto.srbId} not found`,
+      );
+    }
+    const equipment = await this.equipmentRepository.findOne({
+      where: { eq_Id: updateEquipmentBookingDto.equipmnetId },
+    });
+    if (!equipment) {
+      throw new NotFoundException(
+        `Equipment id ${updateEquipmentBookingDto.equipmnetId} not found`,
+      );
+    }
+    const updatedEquipmentBooking =
+      await this.equipmentBookingRepository.create({
+        require: updateEquipmentBookingDto.require,
+        srb: specialRoomBooking,
+        equipmnet: equipment,
+      });
+    return await this.equipmentBookingRepository.update(
+      id,
+      updatedEquipmentBooking,
+    );
   }
 
   remove(id: number) {
-    return `This action removes a #${id} equipmentBooking`;
+    return this.equipmentBookingRepository.delete(id);
   }
 }

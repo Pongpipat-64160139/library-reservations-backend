@@ -25,7 +25,6 @@ export class RolesService {
   findOne(id: number) {
     return this.roleRepository.findOne({
       where: { roleId: id },
-      relations: ['assignment'],
     });
   }
 
