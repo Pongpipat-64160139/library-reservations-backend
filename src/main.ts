@@ -31,6 +31,6 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // อนุญาต HTTP Methods
     credentials: true, // อนุญาตส่ง Cookies หรือ Headers ที่เกี่ยวข้อง
   });
-  await app.listen(process.env.PORT ?? 3000);
+  await app.listen(process.env.PORT ?? 4000);
 }
 bootstrap();
