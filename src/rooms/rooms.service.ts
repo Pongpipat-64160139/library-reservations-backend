@@ -131,14 +131,20 @@ export class RoomsService {
   async GetRoomByType(roomType: string) {
     const result = await this.roomRepository
       .createQueryBuilder('room')
-      .innerJoin('room.floor', 'floor')
+      .innerJoinAndSelect('room.floor','floor')
       .select([
-        'floor.floor_number AS floorNumber', // เพิ่ม Alias ให้ floor_number
-        'room.room_Name AS roomName', // เพิ่ม Alias ให้ room_Name
-        'room.room_Type AS roomType', // เพิ่ม Alias ให้ room_Type
+        'room.roomId AS roomId', // ชื่อ Alias: roomId
+        'room.room_Name AS roomName', // ชื่อ Alias: roomName
+        'room.capacity AS capacity', // ชื่อ Alias: capacity
+        'room.max_hours AS maxHours', // ชื่อ Alias: maxHours
+        'room.room_Status AS roomStatus', // ชื่อ Alias: roomStatus
+        'room.room_Type AS roomType', // ชื่อ Alias: roomType
+        'room.room_Minimum AS roomMinimum', // ชื่อ Alias: roomMinimum
+        'room.orderFood AS orderFood', // ชื่อ Alias: orderFood
+        'floor.floorId AS floorId', //
       ])
-      .where('room.room_Type = :roomType', { roomType: `${roomType}` })
-      .getRawMany();
+      .where('room.room_Type = :roomType', { roomType }) // เงื่อนไข
+      .getRawMany(); // ดึงผลลัพธ์ในรูปแบบ Raw
     return result;
   }
 }
