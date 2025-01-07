@@ -32,6 +32,9 @@ import { EquipmentsModule } from './equipments/equipments.module';
 import { EquipmentBookingModule } from './equipment-booking/equipment-booking.module';
 import { Equipment } from './equipments/entities/equipment.entity';
 import { EquipmentBooking } from './equipment-booking/entities/equipment-booking.entity';
+import { HolidaysService } from './holidays/holidays.service';
+import { HolidaysModule } from './holidays/holidays.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
@@ -75,8 +78,10 @@ import { EquipmentBooking } from './equipment-booking/entities/equipment-booking
     DocumentsModule,
     EquipmentsModule,
     EquipmentBookingModule,
+    HolidaysModule,
+    HttpModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, HolidaysService],
 })
 export class AppModule {}
