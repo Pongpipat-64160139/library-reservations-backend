@@ -23,4 +23,12 @@ export class HolidaysController {
     const yearArray = years.split(','); // รับปีเป็น String แล้วแปลงเป็น Array
     return await this.holidaysService.fetchAndStoreHolidays(yearArray);
   }
+
+  @Post(':id')
+  updateHoliday(
+    @Param('id') id: number,
+    @Body() updateHolidayDto: UpdateHolidayDto,
+  ) {
+    return this.holidaysService.updateHolidayName(id, updateHolidayDto);
+  }
 }

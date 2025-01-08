@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
 import { lastValueFrom } from 'rxjs/internal/lastValueFrom';
@@ -127,5 +127,15 @@ export class HolidaysService {
     }
 
     return savedHolidays;
+  }
+
+  async updateHolidayName(id: number, updateHolidayDto: UpdateHolidayDto) {
+    const holiday = await this.holidayRepository.findOneBy({ id });
+    if (!holiday) {
+      throw new NotFoundException(`Holiday with id ${id} not found`);
+    }
+
+    await this.holidayRepository.update(id, updateHolidayDto);
+    return this.holidayRepository.find({ where: { id } });
   }
 }

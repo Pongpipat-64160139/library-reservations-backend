@@ -11,6 +11,9 @@ export class Holiday {
   @PrimaryGeneratedColumn()
   id: number; // รหัส Primary Key
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  holiday_name: string; // ชื่อวันหยุด
+
   @Column({ type: 'date', unique: true })
   holiday_date: string; // วันที่วันหยุด (ต้องไม่ซ้ำ)
 
