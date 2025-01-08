@@ -43,6 +43,9 @@ export class CreateSpecialRoomBookingDto {
   @IsNotEmpty()
   order_Description: string;
 
+  @IsString()
+  reason: string;
+  
   @IsNumber()
   @IsNotEmpty()
   document: number;

@@ -11,6 +11,7 @@ import {
 import { HolidaysService } from './holidays.service';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
+import { Holiday } from './entities/holiday.entity';
 
 @Controller('holidays')
 export class HolidaysController {
@@ -18,19 +19,8 @@ export class HolidaysController {
 
   // Endpoint: GET /holidays
   @Get()
-  async getHolidays(@Query('years') years: string): Promise<string[]> {
-    // ตรวจสอบว่าได้รับค่า 'years' หรือไม่
-    if (!years) {
-      throw new Error("The 'years' query parameter is required.");
-    }
-
-    // แปลง years จาก string -> Array
-    const yearArray = years.split(','); // เช่น "2023,2024" -> ["2023", "2024"]
-
-    // เรียก service เพื่อดึงข้อมูลวันหยุด
-    const holidays = await this.holidaysService.fetchHolidays(yearArray);
-
-    // ส่งผลลัพธ์กลับ
-    return holidays;
+  async getHolidays(@Query('years') years: string): Promise<Holiday[]> {
+    const yearArray = years.split(','); // รับปีเป็น String แล้วแปลงเป็น Array
+    return await this.holidaysService.fetchAndStoreHolidays(yearArray);
   }
 }

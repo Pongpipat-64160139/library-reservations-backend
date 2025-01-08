@@ -52,6 +52,9 @@ export class SpecialRoomBooking {
   @Column({ type: 'text' })
   order_Description: string;
 
+  @Column({ type: 'text' })
+  reason: string;
+
   @OneToOne(() => Document, (doc) => doc.srb, {
     cascade: true,
   })

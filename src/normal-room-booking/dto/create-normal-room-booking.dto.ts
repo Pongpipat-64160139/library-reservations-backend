@@ -32,6 +32,8 @@ export class CreateNormalRoomBookingDto {
   @IsString()
   reseve_status: string;
 
+  @IsString()
+  reson: string;
   @IsNumber()
   @IsNotEmpty()
   roomId: number;

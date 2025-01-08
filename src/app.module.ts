@@ -35,6 +35,7 @@ import { EquipmentBooking } from './equipment-booking/entities/equipment-booking
 import { HolidaysService } from './holidays/holidays.service';
 import { HolidaysModule } from './holidays/holidays.module';
 import { HttpModule } from '@nestjs/axios';
+import { Holiday } from './holidays/entities/holiday.entity';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { HttpModule } from '@nestjs/axios';
         OrderDetail,
         Equipment,
         EquipmentBooking,
+        Holiday,
       ],
       synchronize: true,
     }),
@@ -82,6 +84,6 @@ import { HttpModule } from '@nestjs/axios';
     HttpModule,
   ],
   controllers: [AppController],
-  providers: [AppService, HolidaysService],
+  providers: [AppService],
 })
 export class AppModule {}
