@@ -1,17 +1,26 @@
 import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { UserBooking } from 'src/user-bookings/entities/user-booking.entity';
 
 export class CreateNormalRoomBookingDto {
   @IsNotEmpty()
   @IsString()
+  @Transform(({ value }) => {
+    const [day, month, year] = value.split('-');
+    return `${year}-${month}-${day}`; // แปลงเป็น YYYY-MM-DD
+  })
   startDate: string;
 
   @IsString()
   @IsNotEmpty()
   startTime: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsString()
+  @Transform(({ value }) => {
+    const [day, month, year] = value.split('-');
+    return `${year}-${month}-${day}`; // แปลงเป็น YYYY-MM-DD
+  })
   endDate: string;
 
   @IsString()
@@ -24,6 +33,10 @@ export class CreateNormalRoomBookingDto {
 
   @IsString()
   @IsNotEmpty()
+  @Transform(({ value }) => {
+    const [day, month, year] = value.split('-');
+    return `${year}-${month}-${day}`; // แปลงเป็น YYYY-MM-DD
+  })
   repeat_End_Flag: string;
 
   @IsString()
@@ -32,8 +45,8 @@ export class CreateNormalRoomBookingDto {
   @IsString()
   reseve_status: string;
 
-  @IsString()
   reson: string;
+
   @IsNumber()
   @IsNotEmpty()
   roomId: number;
