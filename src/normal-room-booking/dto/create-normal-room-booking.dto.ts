@@ -46,7 +46,7 @@ export class CreateNormalRoomBookingDto {
   reseve_status: string;
 
   @IsString()
-  reson: string;
+  reason: string;
 
   @IsNumber()
   @IsNotEmpty()

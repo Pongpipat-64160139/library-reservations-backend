@@ -8,7 +8,10 @@ export class Participant {
 
   @Column()
   fullName: string;
-  
-  @ManyToOne(() => UserBooking, (userbooking) => userbooking.participants)
+
+  @ManyToOne(() => UserBooking, (userbooking) => userbooking.participants, {
+    nullable: false,
+    onDelete: 'CASCADE', // ลบ Participant เมื่อ UserBooking ถูกลบ
+  })
   userbooking: UserBooking;
 }

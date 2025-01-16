@@ -47,7 +47,7 @@ export class NormalRoomBooking {
   details: string;
 
   @Column()
-  reson: string;
+  reason: string;
 
   @ManyToOne(() => Room, (room) => room.normalRoomBookings, { nullable: false })
   roomBooking: Room;

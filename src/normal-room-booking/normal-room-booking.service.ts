@@ -116,7 +116,7 @@ export class NormalRoomBookingService {
       findBooking.repeat_End_Flag = updateNormalRoomBookingDto.repeat_End_Flag;
       findBooking.details = updateNormalRoomBookingDto.details;
       findBooking.reseve_status = updateNormalRoomBookingDto.reseve_status;
-      findBooking.reson = updateNormalRoomBookingDto.reson;
+      findBooking.reason = updateNormalRoomBookingDto.reason;
       findBooking.roomBooking = room; // อัปเดตความสัมพันธ์กับ Room
 
       // บันทึกข้อมูลที่อัปเดต
