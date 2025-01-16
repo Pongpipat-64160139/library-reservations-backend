@@ -88,7 +88,7 @@ export class NormalRoomBookingService {
     // ตรวจสอบว่ามีข้อมูลที่ต้องการอัปเดตหรือไม่
     const findBooking = await this.normalRoomBookingRepository.findOne({
       where: { nrbId: id },
-      relations: ['roomBooking'],
+      relations: ['roomBooking'], // โหลดข้อมูลความสัมพันธ์
     });
 
     if (!findBooking) {
@@ -96,11 +96,31 @@ export class NormalRoomBookingService {
     }
 
     try {
-      // อัปเดตข้อมูลด้วย DTO
-      await this.normalRoomBookingRepository.update(
-        id,
-        updateNormalRoomBookingDto,
-      );
+      // ตรวจสอบ roomId ที่ส่งมา
+      const room = await this.roomRepository.findOne({
+        where: { roomId: updateNormalRoomBookingDto.roomId },
+      });
+
+      if (!room) {
+        throw new NotFoundException(
+          `Room with ID ${updateNormalRoomBookingDto.roomId} not found`,
+        );
+      }
+
+      // อัปเดตข้อมูลใน Booking
+      findBooking.startDate = updateNormalRoomBookingDto.startDate;
+      findBooking.startTime = updateNormalRoomBookingDto.startTime;
+      findBooking.endDate = updateNormalRoomBookingDto.endDate;
+      findBooking.endTime = updateNormalRoomBookingDto.endTime;
+      findBooking.repeat_Flag = updateNormalRoomBookingDto.repeat_Flag;
+      findBooking.repeat_End_Flag = updateNormalRoomBookingDto.repeat_End_Flag;
+      findBooking.details = updateNormalRoomBookingDto.details;
+      findBooking.reseve_status = updateNormalRoomBookingDto.reseve_status;
+      findBooking.reson = updateNormalRoomBookingDto.reson;
+      findBooking.roomBooking = room; // อัปเดตความสัมพันธ์กับ Room
+
+      // บันทึกข้อมูลที่อัปเดต
+      await this.normalRoomBookingRepository.save(findBooking);
 
       // คืนค่าข้อมูลที่อัปเดตพร้อมความสัมพันธ์
       return await this.normalRoomBookingRepository.findOne({

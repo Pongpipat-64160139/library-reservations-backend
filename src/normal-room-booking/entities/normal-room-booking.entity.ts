@@ -46,7 +46,7 @@ export class NormalRoomBooking {
   @Column()
   details: string;
 
-  @Column({ type: 'text' })
+  @Column()
   reson: string;
 
   @ManyToOne(() => Room, (room) => room.normalRoomBookings, { nullable: false })
