@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   InternalServerErrorException,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { NormalRoomBookingService } from './normal-room-booking.service';
 import { CreateNormalRoomBookingDto } from './dto/create-normal-room-booking.dto';
@@ -21,6 +23,14 @@ export class NormalRoomBookingController {
   @Post()
   create(@Body() createNormalRoomBookingDto: CreateNormalRoomBookingDto) {
     return this.normalRoomBookingService.create(createNormalRoomBookingDto);
+  }
+
+  @Get('/getReserved')
+  getReserved(@Query('currentDate') currentDate: string) {
+    if (!currentDate) {
+      throw new BadRequestException('Current date query parameter is required');
+    }
+    return this.normalRoomBookingService.getReserveRoom(currentDate);
   }
 
   @Get()

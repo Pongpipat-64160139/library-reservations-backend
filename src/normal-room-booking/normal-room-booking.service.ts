@@ -160,4 +160,27 @@ export class NormalRoomBookingService {
       );
     }
   }
+
+  async getReserveRoom(currentDate: string) {
+    const result = await this.normalRoomBookingRepository
+      .createQueryBuilder('normal_room_booking')
+      .innerJoinAndSelect('normal_room_booking.roomBooking', 'room') // Join ตาราง Room
+      .innerJoinAndSelect('normal_room_booking.userBookings', 'userBooking') // Join ตาราง UserBooking
+      .innerJoinAndSelect('userBooking.user', 'user') // Join ตาราง User
+      .select([
+        'user.firstName AS user_name',
+        'room.roomId AS room_id',
+        'normal_room_booking.nrbId AS normal_room_booking',
+        'normal_room_booking.startDate AS start_date',
+        'normal_room_booking.startTime AS start_time',
+        'normal_room_booking.endDate AS end_date',
+        'normal_room_booking.endTime AS end_time',
+        'normal_room_booking.reseve_status AS re_status',
+      ])
+      .where('normal_room_booking.startDate = :startDate', {
+        startDate: currentDate,
+      }) // ใช้ค่าจาก currentDate
+      .getRawMany(); // ดึงผลลัพธ์ในรูปแบบ Raw
+    return result;
+  }
 }
