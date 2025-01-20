@@ -174,7 +174,7 @@ export class NormalRoomBookingService {
         'DATE_FORMAT(normal_room_booking.startDate, "%Y-%m-%d") AS start_date', // แปลงวันที่เป็น yyyy-mm-dd
         'DATE_FORMAT(normal_room_booking.startTime, "%H:%i") AS start_time', // ตัด seconds ออก
         'DATE_FORMAT(normal_room_booking.endTime, "%H:%i") AS end_time', // ตัด seconds ออก
-        'normal_room_booking.endDate AS end_date',
+        'DATE_FORMAT(normal_room_booking.endDate, "%Y-%m-%d") AS end_date',
         'normal_room_booking.reseve_status AS re_status',
       ])
       .where('normal_room_booking.startDate = :startDate', {
@@ -183,5 +183,4 @@ export class NormalRoomBookingService {
       .getRawMany(); // ดึงผลลัพธ์ในรูปแบบ Raw
     return result;
   }
-  
 }
