@@ -168,6 +168,7 @@ export class NormalRoomBookingService {
       .innerJoinAndSelect('normal_room_booking.userBookings', 'userBooking') // Join ตาราง UserBooking
       .innerJoinAndSelect('userBooking.user', 'user') // Join ตาราง User
       .select([
+        'user.userId as userId',
         'user.firstName AS user_name',
         'room.roomId AS room_id',
         'normal_room_booking.nrbId AS normal_room_booking',
