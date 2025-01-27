@@ -6,10 +6,11 @@ import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 export class RoleRoomAccess {
   @PrimaryGeneratedColumn()
   access_ID: number;
-  
+
   @ManyToOne(() => Room, (room) => room.roleRoomAccesses, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'roomId' })
   room: Room;
@@ -17,6 +18,7 @@ export class RoleRoomAccess {
   @ManyToOne(() => Role, (role) => role.roleRoomAccesses, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'roleId' })
   role: Role;

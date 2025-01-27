@@ -18,13 +18,16 @@ export class Floor {
   @Column()
   total_Room: number;
 
-
   @Column({ type: 'time' })
   openTime: string;
 
   @Column({ type: 'time' })
   closedTime: string;
 
-  @OneToMany(() => Room, (room) => room.floor)
+  @OneToMany(() => Room, (room) => room.floor, {
+    cascade: true, // ลบห้องทั้งหมดเมื่อชั้นถูกลบ
+    onDelete: 'CASCADE', // ลบข้อมูล room ถ้า floor ถูกลบ
+    onUpdate: 'CASCADE', // อัปเดตข้อมูล room ถ้า floor มีการเปลี่ยนแปลง
+  })
   rooms: Room[];
 }

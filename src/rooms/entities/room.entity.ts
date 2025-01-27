@@ -37,22 +37,39 @@ export class Room {
   @Column()
   orderFood: string;
 
-  @ManyToOne(() => Floor, (floor) => floor.rooms)
+  @ManyToOne(() => Floor, (floor) => floor.rooms, {
+    nullable: false,
+    onDelete: 'CASCADE', // ถ้าลบ Floor จะลบ Room ทั้งหมดที่เชื่อมโยงกัน
+    onUpdate: 'CASCADE', // ถ้าอัปเดต Floor จะอัปเดต Room ด้วย
+  })
   floor: Floor;
 
-  @OneToMany(() => Confirmation, (confirmation) => confirmation.room)
+  @OneToMany(() => Confirmation, (confirmation) => confirmation.room, {
+    cascade: true, // ลบ Confirmation เมื่อ Room ถูกลบ
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   confirmations: Confirmation[];
 
   @OneToMany(() => NormalRoomBooking, (nrb) => nrb.roomBooking, {
     nullable: false,
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   normalRoomBookings: NormalRoomBooking[];
 
+  @OneToMany(() => RoleRoomAccess, (rra) => rra.room, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  roleRoomAccesses: RoleRoomAccess[];
 
-  @OneToMany(()=> RoleRoomAccess, (rra)=> rra.room)
-  roleRoomAccesses: RoleRoomAccess[]
-
-
-  @OneToMany(()=> SpecialRoomBooking,(srb)=> srb.room)
-  specialRoomBookings: SpecialRoomBooking[]
+  @OneToMany(() => SpecialRoomBooking, (srb) => srb.room, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
+  specialRoomBookings: SpecialRoomBooking[];
 }

@@ -64,6 +64,7 @@ export class SpecialRoomBooking {
   @ManyToOne(() => User, (user) => user.specialRoomBookings, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'userId' })
   user: User;
@@ -71,6 +72,7 @@ export class SpecialRoomBooking {
   @ManyToOne(() => Room, (room) => room.specialRoomBookings, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'roomId' })
   room: Room;

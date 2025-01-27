@@ -49,13 +49,22 @@ export class NormalRoomBooking {
   @Column()
   reason: string;
 
-  @ManyToOne(() => Room, (room) => room.normalRoomBookings, { nullable: false })
+  @ManyToOne(() => Room, (room) => room.normalRoomBookings, {
+    nullable: false,
+    onDelete: 'CASCADE', // ลบห้องเมื่อการจองถูกลบ
+    onUpdate: 'CASCADE', // อัปเดตข้อมูลอัตโนมัติเมื่อมีการเปลี่ยนแปลง
+  })
   roomBooking: Room;
 
   @OneToMany(
     () => UserBooking,
     (userBooking) => userBooking.normalRoomBooking,
-    { nullable: false },
+    {
+      cascade: true, // ลบข้อมูลในตาราง UserBooking เมื่อลบการจอง
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+    },
   )
   userBookings: UserBooking[];
 }
+

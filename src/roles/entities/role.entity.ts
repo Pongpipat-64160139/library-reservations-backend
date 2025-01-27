@@ -21,12 +21,24 @@ export class Role {
   // @Column({ nullable: false })
   // department: string;
 
-  @OneToMany(() => RoleAssignment, (roleAss) => roleAss.role)
+  @OneToMany(() => RoleAssignment, (roleAss) => roleAss.role, {
+    cascade: true, // ลบ RoleAssignment เมื่อ Role ถูกลบ
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   roleAssignments: RoleAssignment[];
 
-  @OneToMany(() => Confirmation, (confirm) => confirm.role)
+  @OneToMany(() => Confirmation, (confirm) => confirm.role, {
+    cascade: true, // ลบ Confirmation เมื่อ Role ถูกลบ
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   confirmations: Confirmation[];
 
-  @OneToMany(() => RoleRoomAccess, (rra) => rra.role)
+  @OneToMany(() => RoleRoomAccess, (rra) => rra.role, {
+    cascade: true, // ลบ RoleRoomAccess เมื่อ Role ถูกลบ
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   roleRoomAccesses: RoleRoomAccess[];
 }

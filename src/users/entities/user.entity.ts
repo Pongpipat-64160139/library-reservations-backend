@@ -35,18 +35,34 @@ export class User {
   @IsEmail()
   email: string;
 
-  @OneToMany(() => RoleAssignment, (roleAss) => roleAss.user)
+  @OneToMany(() => RoleAssignment, (roleAss) => roleAss.user, {
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   roleAssignments: RoleAssignment[];
 
-  @OneToMany(() => Confirmation, (confirm) => confirm.user, { nullable: false })
+  @OneToMany(() => Confirmation, (confirm) => confirm.user, {
+    nullable: false,
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   confirmations: Confirmation[];
 
   @OneToMany(() => UserBooking, (userbooking) => userbooking.user, {
     nullable: false,
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   userBookings: UserBooking[];
 
-
-  @OneToMany(()=> SpecialRoomBooking,(srb)=> srb.user)
+  @OneToMany(() => SpecialRoomBooking, (srb) => srb.user, {
+    nullable: false,
+    cascade: true,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   specialRoomBookings: SpecialRoomBooking[];
 }

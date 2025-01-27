@@ -24,6 +24,7 @@ export class UserBooking {
   @ManyToOne(() => NormalRoomBooking, (nmb) => nmb.userBookings, {
     nullable: false,
     onDelete: 'CASCADE', // ลบ UserBooking เมื่อ NormalRoomBooking ถูกลบ
+    onUpdate: 'CASCADE',  // อัปเดตเมื่อ normalRoomBooking ถูกอัปเดต
   })
   @JoinColumn({ name: 'nrbId' })
   normalRoomBooking: NormalRoomBooking;

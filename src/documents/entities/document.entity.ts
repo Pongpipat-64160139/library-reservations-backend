@@ -18,6 +18,10 @@ export class Document {
   @Column({ type: 'longblob' }) // ใช้ longblob สำหรับเก็บไฟล์ใหญ่ ๆ
   data: Buffer; // ตัวไฟล์จริงในรูปแบบ Binary
 
-  @OneToOne(()=> SpecialRoomBooking,(srb)=> srb.document)
+  @OneToOne(() => SpecialRoomBooking, (srb) => srb.document, {
+    nullable: false,
+    onDelete: 'CASCADE', // ลบ Document เมื่อ SpecialRoomBooking ถูกลบ
+    onUpdate: 'CASCADE', // อัปเดตเมื่อ SpecialRoomBooking ถูกอัปเดต
+  })
   srb: SpecialRoomBooking;
 }

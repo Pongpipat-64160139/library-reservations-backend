@@ -19,6 +19,7 @@ export class EquipmentBooking {
   @ManyToOne(() => Equipment, (eq) => eq.equipmentBookings, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'eq_Id' })
   equipmnet: Equipment;
@@ -26,6 +27,7 @@ export class EquipmentBooking {
   @ManyToOne(() => SpecialRoomBooking, (srb) => srb.equipmentBookings, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'srb_Id' })
   srb: SpecialRoomBooking;

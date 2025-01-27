@@ -30,6 +30,7 @@ export class OrderDetail {
   @ManyToOne(() => SpecialRoomBooking, (srb) => srb.orderDetails, {
     nullable: false,
     onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'SpecialRoomBooking_Id' })
   srb: SpecialRoomBooking;
