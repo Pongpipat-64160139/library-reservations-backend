@@ -6,13 +6,15 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
+import * as dayjs from 'dayjs';
+import { Transform } from 'class-transformer';
 @Entity()
 export class OrderDetail {
   @PrimaryGeneratedColumn()
   orders_ID: number;
 
-  @Column()
+  @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   Serve_Time: string;
 
   @Column()

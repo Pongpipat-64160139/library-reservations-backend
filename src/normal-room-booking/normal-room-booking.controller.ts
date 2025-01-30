@@ -33,6 +33,11 @@ export class NormalRoomBookingController {
     return this.normalRoomBookingService.getReserveRoom(currentDate);
   }
 
+  @Get('/getAllReserved')
+  async getAllReserved() {
+    return await this.normalRoomBookingService.getAllReverseForManager();
+  }
+
   @Get()
   findAll() {
     return this.normalRoomBookingService.findAll();

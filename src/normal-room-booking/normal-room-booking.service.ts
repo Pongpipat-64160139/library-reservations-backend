@@ -7,8 +7,10 @@ import { CreateNormalRoomBookingDto } from './dto/create-normal-room-booking.dto
 import { UpdateNormalRoomBookingDto } from './dto/update-normal-room-booking.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from 'src/rooms/entities/room.entity';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { NormalRoomBooking } from './entities/normal-room-booking.entity';
+import { SpecialRoomBooking } from 'src/special-room-bookings/entities/special-room-booking.entity';
+import { query } from 'express';
 
 @Injectable()
 export class NormalRoomBookingService {
@@ -17,6 +19,9 @@ export class NormalRoomBookingService {
     private roomRepository: Repository<Room>,
     @InjectRepository(NormalRoomBooking)
     private normalRoomBookingRepository: Repository<NormalRoomBooking>,
+    @InjectRepository(SpecialRoomBooking)
+    private specialRoomBookingRepository: Repository<SpecialRoomBooking>,
+    private readonly dataSource: DataSource,
   ) {}
   async create(createNormalRoomBookingDto: CreateNormalRoomBookingDto) {
     const { roomId, ...dataNormal } = createNormalRoomBookingDto;
@@ -182,6 +187,57 @@ export class NormalRoomBookingService {
         startDate: currentDate,
       }) // ใช้ค่าจาก currentDate
       .getRawMany(); // ดึงผลลัพธ์ในรูปแบบ Raw
+    return result;
+  }
+
+  async getAllReverseForManager() {
+    const query1 = await this.normalRoomBookingRepository
+      .createQueryBuilder('normal_room_booking')
+      .innerJoinAndSelect('normal_room_booking.roomBooking', 'room')
+      .innerJoinAndSelect('room.floor', 'floor')
+      .innerJoinAndSelect('normal_room_booking.userBookings', 'userBooking')
+      .innerJoinAndSelect('userBooking.user', 'user')
+      .select([
+        'normal_room_booking.nrbId AS nrb_id',
+        'user.userName AS user_name',
+        'floor.floor_Number AS floor_number',
+        'room.room_name AS room_name',
+        'normal_room_booking.startDate AS start_date',
+        'normal_room_booking.startTime AS start_time',
+        'normal_room_booking.endDate AS end_date',
+        'normal_room_booking.endTime AS end_time',
+        'normal_room_booking.reseve_status AS reseve_status',
+        'normal_room_booking.cencelTime AS coalesce_time',
+        'normal_room_booking.reason AS reason',
+        'normal_room_booking.details AS details',
+        'Null AS equip_Descript',
+        'Null AS order_Description',
+      ])
+      .getQuery();
+    const query2 = await this.specialRoomBookingRepository
+      .createQueryBuilder('special_room_booking')
+      .innerJoinAndSelect('special_room_booking.user', 'user')
+      .innerJoinAndSelect('special_room_booking.room', 'room')
+      .innerJoinAndSelect('room.floor', 'floor')
+      .select([
+        'special_room_booking.srb_Id AS srb_id',
+        'user.userName AS user_name',
+        'floor.floor_Number AS floor_number',
+        'room.room_name AS room_name',
+        'special_room_booking.start_Date AS start_date',
+        'special_room_booking.start_Time AS start_time',
+        'special_room_booking.end_Date AS end_date',
+        'special_room_booking.end_Time AS end_time',
+        'special_room_booking.reseve_status AS reseve_status',
+        'special_room_booking.cencelTime AS coalesce_time',
+        'special_room_booking.reason AS reason',
+        'Null AS details',
+        'special_room_booking.equip_Descript AS equip_Descript',
+        'special_room_booking.order_Description AS order_description',
+      ])
+      .getQuery();
+    const finalQuery = `${query1} UNION ${query2}`;
+    const result = await this.dataSource.query(finalQuery);
     return result;
   }
 }

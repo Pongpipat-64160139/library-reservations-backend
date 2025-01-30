@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsNumber, IsString, MaxLength, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 import { EquipmentBooking } from 'src/equipment-booking/entities/equipment-booking.entity';
 import { OrderDetail } from 'src/order-details/entities/order-detail.entity';
 
@@ -45,10 +51,13 @@ export class CreateSpecialRoomBookingDto {
 
   @IsString()
   reason: string;
-  
+
   @IsNumber()
   @IsNotEmpty()
   document: number;
+
+  @IsString()
+  cencelTime: string;
 
   @IsNumber()
   @IsNotEmpty()

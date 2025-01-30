@@ -6,7 +6,8 @@ import {
   PrimaryGeneratedColumn,
   Timestamp,
 } from 'typeorm';
-
+import * as dayjs from 'dayjs';
+import { Transform } from 'class-transformer';
 @Entity()
 export class Floor {
   @PrimaryGeneratedColumn()
@@ -19,9 +20,11 @@ export class Floor {
   total_Room: number;
 
   @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   openTime: string;
 
   @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   closedTime: string;
 
   @OneToMany(() => Room, (room) => room.floor, {

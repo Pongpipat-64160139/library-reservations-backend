@@ -12,7 +12,8 @@ import {
   OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-
+import * as dayjs from 'dayjs';
+import { Transform } from 'class-transformer';
 @Entity()
 export class SpecialRoomBooking {
   @PrimaryGeneratedColumn()
@@ -28,12 +29,14 @@ export class SpecialRoomBooking {
   start_Date: string;
 
   @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   start_Time: string;
 
   @Column({ type: 'date' })
   end_Date: string;
 
   @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   end_Time: string;
 
   @Column({ type: 'varchar', length: 255 })
@@ -55,6 +58,9 @@ export class SpecialRoomBooking {
   @Column({ type: 'text' })
   reason: string;
 
+  @Column({ type: 'time', nullable: false })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
+  cencelTime: string;
   @OneToOne(() => Document, (doc) => doc.srb, {
     cascade: true,
   })

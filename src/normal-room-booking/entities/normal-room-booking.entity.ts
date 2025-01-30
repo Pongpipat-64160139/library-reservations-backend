@@ -20,6 +20,7 @@ export class NormalRoomBooking {
   startDate: string;
 
   @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   startTime: string;
 
   @Column({ type: 'date' })
@@ -27,6 +28,7 @@ export class NormalRoomBooking {
   endDate: string;
 
   @Column({ type: 'time' })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
   endTime: string;
 
   @Column()
@@ -49,6 +51,10 @@ export class NormalRoomBooking {
   @Column()
   reason: string;
 
+  @Column({ type: 'time', nullable: false })
+  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
+  cencelTime: string;
+
   @ManyToOne(() => Room, (room) => room.normalRoomBookings, {
     nullable: false,
     onDelete: 'CASCADE', // ลบห้องเมื่อการจองถูกลบ
@@ -67,4 +73,3 @@ export class NormalRoomBooking {
   )
   userBookings: UserBooking[];
 }
-
