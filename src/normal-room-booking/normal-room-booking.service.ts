@@ -202,19 +202,18 @@ export class NormalRoomBookingService {
         'user.userName AS user_name',
         'floor.floor_Number AS floor_number',
         'room.room_name AS room_name',
-        'DATE_FORMAT(normal_room_booking.startDate, "%Y-%m-%d") AS start_date', // ✅ แปลงวันที่เป็น yyyy-mm-dd
-        'DATE_FORMAT(normal_room_booking.startTime, "%H:%i") AS start_time', // ✅ ตัด seconds ออก
-        'DATE_FORMAT(normal_room_booking.endDate, "%Y-%m-%d") AS end_date', // ✅ แปลงวันที่เป็น yyyy-mm-dd
-        'DATE_FORMAT(normal_room_booking.endTime, "%H:%i") AS end_time', // ✅ ตัด seconds ออก
+        'normal_room_booking.startDate AS start_date',
+        'normal_room_booking.startTime AS start_time',
+        'normal_room_booking.endDate AS end_date',
+        'normal_room_booking.endTime AS end_time',
         'normal_room_booking.reseve_status AS reseve_status',
         'normal_room_booking.cencelTime AS coalesce_time',
         'normal_room_booking.reason AS reason',
         'normal_room_booking.details AS details',
-        'NULL AS equip_Descript',
-        'NULL AS order_Description',
+        'Null AS equip_Descript',
+        'Null AS order_Description',
       ])
       .getQuery();
-
     const query2 = await this.specialRoomBookingRepository
       .createQueryBuilder('special_room_booking')
       .innerJoinAndSelect('special_room_booking.user', 'user')
@@ -225,19 +224,18 @@ export class NormalRoomBookingService {
         'user.userName AS user_name',
         'floor.floor_Number AS floor_number',
         'room.room_name AS room_name',
-        'DATE_FORMAT(special_room_booking.start_Date, "%Y-%m-%d") AS start_date', // ✅ แปลงวันที่เป็น yyyy-mm-dd
-        'DATE_FORMAT(special_room_booking.start_Time, "%H:%i") AS start_time', // ✅ ตัด seconds ออก
-        'DATE_FORMAT(special_room_booking.end_Date, "%Y-%m-%d") AS end_date', // ✅ แปลงวันที่เป็น yyyy-mm-dd
-        'DATE_FORMAT(special_room_booking.end_Time, "%H:%i") AS end_time', // ✅ ตัด seconds ออก
+        'special_room_booking.start_Date AS start_date',
+        'special_room_booking.start_Time AS start_time',
+        'special_room_booking.end_Date AS end_date',
+        'special_room_booking.end_Time AS end_time',
         'special_room_booking.reseve_status AS reseve_status',
         'special_room_booking.cencelTime AS coalesce_time',
         'special_room_booking.reason AS reason',
-        'NULL AS details',
+        'Null AS details',
         'special_room_booking.equip_Descript AS equip_Descript',
         'special_room_booking.order_Description AS order_description',
       ])
       .getQuery();
-
     const finalQuery = `${query1} UNION ${query2}`;
     const result = await this.dataSource.query(finalQuery);
     return result;
