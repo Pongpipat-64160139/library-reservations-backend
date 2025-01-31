@@ -51,9 +51,10 @@ export class NormalRoomBooking {
   @Column()
   reason: string;
 
-  // @Column({ type: 'time', nullable: false })
-  // @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
-  // cencelTime: string;
+  @Column({ type: 'time', nullable: true }) // เอา default ออก
+  @Transform(({ value }) => (value ? dayjs(value, 'HH:mm:ss').format('HH:mm') : null)) 
+  cancelTime: string | null;
+  
 
   @ManyToOne(() => Room, (room) => room.normalRoomBookings, {
     nullable: false,

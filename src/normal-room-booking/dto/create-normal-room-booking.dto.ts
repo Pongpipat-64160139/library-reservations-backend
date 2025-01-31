@@ -48,8 +48,8 @@ export class CreateNormalRoomBookingDto {
   @IsString()
   reason: string;
 
-  // @IsString()
-  // cencelTime: string;
+  @IsString()
+  cancelTime: string;
 
   @IsNumber()
   @IsNotEmpty()
