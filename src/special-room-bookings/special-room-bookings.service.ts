@@ -133,21 +133,26 @@ export class SpecialRoomBookingsService {
     id: number,
     updateSpecialRoomBookingDto: UpdateSpecialRoomBookingDto,
   ) {
+    // ค้นหาข้อมูลที่ต้องการอัปเดต
     const existingBooking = await this.specialRoomBookingRepository.findOne({
       where: { srb_Id: id },
     });
-
+  
+    // ถ้าไม่พบข้อมูล ให้โยน Error
     if (!existingBooking) {
       throw new NotFoundException(`SpecialRoomBooking with ID ${id} not found`);
     }
-
-    // อัปเดตข้อมูล
+  
+    // อัปเดตเฉพาะฟิลด์ที่ส่งมา โดยไม่ทำให้ฟิลด์ที่ไม่ได้ส่งหายไป
     const updatedBooking = Object.assign(
       existingBooking,
       updateSpecialRoomBookingDto,
     );
+  
+    // บันทึกข้อมูลที่อัปเดต
     return await this.specialRoomBookingRepository.save(updatedBooking);
   }
+  
 
   // 4. Remove SpecialRoomBooking
   async remove(id: number) {

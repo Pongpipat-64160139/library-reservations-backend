@@ -39,6 +39,7 @@ export class CreateSpecialRoomBookingDto {
   @IsNotEmpty()
   stage_Name: string;
 
+  @IsString()
   reseve_status: string;
 
   @IsString()
@@ -57,7 +58,7 @@ export class CreateSpecialRoomBookingDto {
   document: number;
 
   @IsString()
-  cencelTime: string;
+  cancelTime: string;
 
   @IsNumber()
   @IsNotEmpty()

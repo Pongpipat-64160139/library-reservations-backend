@@ -88,9 +88,9 @@ export class NormalRoomBookingService {
 
   async update(
     id: number,
-    updateNormalRoomBookingDto: UpdateNormalRoomBookingDto,
+    updateNormalRoomBookingDto: Partial<UpdateNormalRoomBookingDto>, // ✅ Partial ให้รองรับอัปเดตบางฟิลด์
   ) {
-    // ตรวจสอบว่ามีข้อมูลที่ต้องการอัปเดตหรือไม่
+    // ค้นหาข้อมูลที่ต้องการอัปเดต
     const findBooking = await this.normalRoomBookingRepository.findOne({
       where: { nrbId: id },
       relations: ['roomBooking'], // โหลดข้อมูลความสัมพันธ์
@@ -101,39 +101,33 @@ export class NormalRoomBookingService {
     }
 
     try {
-      // ตรวจสอบ roomId ที่ส่งมา
-      const room = await this.roomRepository.findOne({
-        where: { roomId: updateNormalRoomBookingDto.roomId },
-      });
+      // ✅ ถ้ามีการอัปเดต roomId ต้องไปดึงข้อมูลห้องก่อน
+      if (updateNormalRoomBookingDto.roomId) {
+        const room = await this.roomRepository.findOne({
+          where: { roomId: updateNormalRoomBookingDto.roomId },
+        });
 
-      if (!room) {
-        throw new NotFoundException(
-          `Room with ID ${updateNormalRoomBookingDto.roomId} not found`,
-        );
+        if (!room) {
+          throw new NotFoundException(
+            `Room with ID ${updateNormalRoomBookingDto.roomId} not found`,
+          );
+        }
+
+        findBooking.roomBooking = room; // ✅ อัปเดต Room ถ้ามีการส่งมา
       }
 
-      // อัปเดตข้อมูลใน Booking
-      findBooking.startDate = updateNormalRoomBookingDto.startDate;
-      findBooking.startTime = updateNormalRoomBookingDto.startTime;
-      findBooking.endDate = updateNormalRoomBookingDto.endDate;
-      findBooking.endTime = updateNormalRoomBookingDto.endTime;
-      findBooking.repeat_Flag = updateNormalRoomBookingDto.repeat_Flag;
-      findBooking.repeat_End_Flag = updateNormalRoomBookingDto.repeat_End_Flag;
-      findBooking.details = updateNormalRoomBookingDto.details;
-      findBooking.reseve_status = updateNormalRoomBookingDto.reseve_status;
-      findBooking.reason = updateNormalRoomBookingDto.reason;
-      findBooking.roomBooking = room; // อัปเดตความสัมพันธ์กับ Room
+      // ✅ ใช้ Object.assign() เพื่ออัปเดตเฉพาะค่าที่ส่งมา
+      Object.assign(findBooking, updateNormalRoomBookingDto);
 
-      // บันทึกข้อมูลที่อัปเดต
+      // ✅ บันทึกข้อมูลที่อัปเดต
       await this.normalRoomBookingRepository.save(findBooking);
 
-      // คืนค่าข้อมูลที่อัปเดตพร้อมความสัมพันธ์
+      // ✅ คืนค่าข้อมูลที่อัปเดตพร้อมความสัมพันธ์
       return await this.normalRoomBookingRepository.findOne({
         where: { nrbId: id },
         relations: ['roomBooking'],
       });
     } catch (error) {
-      // จัดการข้อผิดพลาดที่เกิดขึ้น
       throw new InternalServerErrorException(
         `Failed to update NormalRoomBooking with ID ${id}`,
         error.message,
@@ -191,52 +185,60 @@ export class NormalRoomBookingService {
   }
 
   async getAllReverseForManager() {
-    const query1 = await this.normalRoomBookingRepository
+    const query1 = this.normalRoomBookingRepository
       .createQueryBuilder('normal_room_booking')
-      .innerJoinAndSelect('normal_room_booking.roomBooking', 'room')
-      .innerJoinAndSelect('room.floor', 'floor')
-      .innerJoinAndSelect('normal_room_booking.userBookings', 'userBooking')
-      .innerJoinAndSelect('userBooking.user', 'user')
+      .innerJoin('normal_room_booking.roomBooking', 'room')
+      .innerJoin('room.floor', 'floor')
+      .innerJoin('normal_room_booking.userBookings', 'userBooking')
+      .innerJoin('userBooking.user', 'user')
       .select([
-        'normal_room_booking.nrbId AS nrb_id',
+        'normal_room_booking.nrbId AS reserved_Id',
         'user.userName AS user_name',
         'floor.floor_Number AS floor_number',
         'room.room_name AS room_name',
-        'normal_room_booking.startDate AS start_date',
-        'normal_room_booking.startTime AS start_time',
-        'normal_room_booking.endDate AS end_date',
-        'normal_room_booking.endTime AS end_time',
+        'DATE_FORMAT(normal_room_booking.startDate, "%d-%m-%Y") AS start_date',
+        'DATE_FORMAT(normal_room_booking.startTime, "%H:%i") AS start_time',
+        'DATE_FORMAT(normal_room_booking.endDate, "%d-%m-%Y") AS end_date',
+        'DATE_FORMAT(normal_room_booking.endTime, "%H:%i") AS end_time',
         'normal_room_booking.reseve_status AS reseve_status',
-        'normal_room_booking.cencelTime AS coalesce_time',
+        'DATE_FORMAT(normal_room_booking.cancelTime, "%H:%i") AS coalesce_time',
         'normal_room_booking.reason AS reason',
         'normal_room_booking.details AS details',
-        'Null AS equip_Descript',
-        'Null AS order_Description',
+        'NULL AS equip_Descript',
+        'NULL AS order_Description',
+        'room.room_Type AS room_Type',
+        `CAST('normal' AS CHAR) AS formReserved`, // ✅ ใช้ CAST เพื่อหลีกเลี่ยง error
       ])
       .getQuery();
-    const query2 = await this.specialRoomBookingRepository
+
+    const query2 = this.specialRoomBookingRepository
       .createQueryBuilder('special_room_booking')
-      .innerJoinAndSelect('special_room_booking.user', 'user')
-      .innerJoinAndSelect('special_room_booking.room', 'room')
-      .innerJoinAndSelect('room.floor', 'floor')
+      .innerJoin('special_room_booking.user', 'user')
+      .innerJoin('special_room_booking.room', 'room')
+      .innerJoin('room.floor', 'floor')
       .select([
-        'special_room_booking.srb_Id AS srb_id',
+        'special_room_booking.srb_Id AS reserved_Id',
         'user.userName AS user_name',
         'floor.floor_Number AS floor_number',
         'room.room_name AS room_name',
-        'special_room_booking.start_Date AS start_date',
-        'special_room_booking.start_Time AS start_time',
-        'special_room_booking.end_Date AS end_date',
-        'special_room_booking.end_Time AS end_time',
+        'DATE_FORMAT(special_room_booking.start_Date, "%d-%m-%Y") AS start_date',
+        'DATE_FORMAT(special_room_booking.start_Time, "%H:%i") AS start_time',
+        'DATE_FORMAT(special_room_booking.end_Date, "%d-%m-%Y") AS end_date',
+        'DATE_FORMAT(special_room_booking.end_Time, "%H:%i") AS end_time',
         'special_room_booking.reseve_status AS reseve_status',
-        'special_room_booking.cencelTime AS coalesce_time',
+        'DATE_FORMAT(special_room_booking.cancelTime, "%H:%i") AS coalesce_time',
         'special_room_booking.reason AS reason',
-        'Null AS details',
+        'NULL AS details',
         'special_room_booking.equip_Descript AS equip_Descript',
         'special_room_booking.order_Description AS order_description',
+        'room.room_Type AS room_Type',
+        `CAST('special' AS CHAR) AS formReserved`, // ✅ ใช้ CAST เพื่อหลีกเลี่ยง error
       ])
       .getQuery();
-    const finalQuery = `${query1} UNION ${query2}`;
+
+    // ✅ ใช้ ORDER BY อย่างถูกต้อง
+    const finalQuery = `(${query1}) UNION ALL (${query2}) ORDER BY reserved_Id DESC`;
+
     const result = await this.dataSource.query(finalQuery);
     return result;
   }

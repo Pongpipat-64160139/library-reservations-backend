@@ -44,7 +44,8 @@ export class SpecialRoomBooking {
 
   @Column({
     type: 'enum',
-    enum: ['รอ', 'อนุมัติ', 'ไม่อนุมัติ'],
+    nullable: true,
+    enum: ['รอ', 'อนุมัติ', 'ยกเลิก'],
     default: 'รอ',
   })
   reseve_status: string;
@@ -58,9 +59,12 @@ export class SpecialRoomBooking {
   @Column({ type: 'text' })
   reason: string;
 
-  @Column({ type: 'time', nullable: false })
-  @Transform(({ value }) => dayjs(value, 'HH:mm:ss').format('HH:mm')) // แปลงเป็น HH:mm ตอนดึงข้อมูล
-  cencelTime: string;
+  @Column({ type: 'time', nullable: true }) // เอา default ออก
+  @Transform(({ value }) =>
+    value ? dayjs(value, 'HH:mm:ss').format('HH:mm') : null,
+  )
+  cancelTime: string | null;
+
   @OneToOne(() => Document, (doc) => doc.srb, {
     cascade: true,
   })
