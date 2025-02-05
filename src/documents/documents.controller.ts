@@ -19,28 +19,28 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class DocumentsController {
   constructor(private readonly documentsService: DocumentsService) {}
 
-  @Post()
-  @UseInterceptors(FileInterceptor('data'))
-  async create(
-    @UploadedFile() file: Express.Multer.File,
-    @Body() body: { fileName: string; fileType: string; fileSize: string },
-  ) {
-    // ตรวจสอบข้อมูล
-    if (!file) {
-      throw new BadRequestException('File is required');
-    }
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    try {
+      if (!file) {
+        throw new BadRequestException('File is required');
+      }
 
-    if (!body.fileName || !body.fileType || !body.fileSize) {
-      throw new BadRequestException('Missing required file information');
-    }
+      // ✅ แปลงชื่อไฟล์ให้รองรับ UTF-8
+      const fileName = Buffer.from(file.originalname, 'latin1').toString(
+        'utf-8',
+      );
 
-    // ส่งไปยัง Service
-    return this.documentsService.create({
-      fileName: body.fileName,
-      fileType: body.fileType,
-      fileSize: parseInt(body.fileSize, 10), // แปลง fileSize เป็นตัวเลข
-      data: file.buffer, // แปลงไฟล์เป็น Buffer
-    });
+      // ✅ ส่งไปที่ Service
+      return await this.documentsService.create({
+        ...file,
+        originalname: fileName,
+      });
+    } catch (error) {
+      console.error('📢 Upload Error:', error);
+      throw new BadRequestException('Failed to upload file');
+    }
   }
 
   @Get()

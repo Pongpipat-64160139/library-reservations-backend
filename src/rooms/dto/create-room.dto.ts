@@ -34,6 +34,13 @@ export class CreateRoomDto {
   @IsNotEmpty({ message: 'OrderFood is required' })
   orderFood: string;
 
+  RoomKey: string;
+
+  
+  imagePath: string; // เก็บ URL ของรูปที่อัปโหลดไปที่ Cloudinary
+  
+  DetailRoom: string;
+
   @IsNumber()
   @IsNotEmpty({ message: 'Floor ID is required' })
   floorId: number; // ใช้เพื่อเชื่อม Floor
@@ -44,5 +51,5 @@ export class CreateRoomDto {
 
   confirmations: Confirmation[];
 
-    normalRoomBookings: NormalRoomBooking[];
+  normalRoomBookings: NormalRoomBooking[];
 }

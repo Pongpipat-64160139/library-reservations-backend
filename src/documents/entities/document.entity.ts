@@ -1,5 +1,5 @@
 import { SpecialRoomBooking } from 'src/special-room-bookings/entities/special-room-booking.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, CreateDateColumn } from 'typeorm';
 
 @Entity()
 export class Document {
@@ -9,10 +9,10 @@ export class Document {
   @Column({ type: 'varchar', length: 255 })
   fileName: string; // ชื่อไฟล์ เช่น "example.pdf"
 
-  @Column({ type: 'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 100, nullable: false })
   fileType: string; // ประเภทไฟล์ เช่น "application/pdf"
 
-  @Column({ type: 'bigint' })
+  @Column({ type: 'bigint', nullable: false })
   fileSize: number; // ขนาดไฟล์ในหน่วย Byte เช่น 1024
 
   @Column({ type: 'longblob' }) // ใช้ longblob สำหรับเก็บไฟล์ใหญ่ ๆ

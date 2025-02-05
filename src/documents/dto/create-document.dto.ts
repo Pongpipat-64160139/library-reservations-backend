@@ -1,9 +1,18 @@
+import { IsOptional, IsNotEmpty, IsString, IsNumber } from 'class-validator';
+
 export class CreateDocumentDto {
-  fileName: string; // ชื่อไฟล์ เช่น "example.pdf"
+  @IsOptional()
+  @IsString()
+  fileName?: string; // ไม่ต้องรับจาก User แต่ระบบจะดึงจาก `req.file.originalname`
 
-  fileType: string; // ประเภทไฟล์ เช่น "application/pdf"
+  @IsOptional()
+  @IsString()
+  fileType?: string; // ไม่ต้องรับจาก User แต่ระบบจะดึงจาก `req.file.mimetype`
 
-  fileSize: number; // ขนาดไฟล์ในหน่วย Byte เช่น 1024
+  @IsOptional()
+  @IsNumber()
+  fileSize?: number; // ไม่ต้องรับจาก User แต่ระบบจะดึงจาก `req.file.size`
 
-  data: Buffer; // ตัวไฟล์จริงในรูปแบบ Binary
+  @IsOptional()
+  data?: Buffer; // รองรับไฟล์ Binary
 }

@@ -15,44 +15,48 @@ export class DocumentsService {
     @InjectRepository(Document)
     private documentRepository: Repository<Document>,
   ) {}
-  async create(createDocumentDto: CreateDocumentDto) {
-    const { fileName, fileType, fileSize, data } = createDocumentDto;
+  async create(file: Express.Multer.File) {
+    try {
+      // ✅ 1️ ตรวจสอบว่าไฟล์มีข้อมูลหรือไม่
+      if (!file) {
+        throw new BadRequestException('File is required');
+      }
 
-    // ตรวจสอบขนาดไฟล์
-    if (fileSize > 10 * 1024 * 1024) {
-      // 10MB
-      throw new BadRequestException('File size exceeds the 10MB limit');
+      // ✅ 2️ ดึงข้อมูลจาก `req.file`
+      const fileName = file.originalname; // ดึงชื่อไฟล์จากชื่อไฟล์จริง
+      const fileType = file.mimetype; // ดึงประเภทไฟล์จาก mimetype
+      const fileSize = file.size; // ดึงขนาดไฟล์จากขนาดจริง
+      const data = file.buffer; // ดึงข้อมูลไฟล์เป็น Buffer
+
+      // ✅ 3️ ตรวจสอบขนาดไฟล์ (ไม่เกิน 10MB)
+      if (fileSize > 10 * 1024 * 1024) {
+        throw new BadRequestException('File size exceeds the 10MB limit');
+      }
+
+      // ✅ 4 ตรวจสอบประเภทไฟล์ที่รองรับ
+      const allowedFileTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+      if (!allowedFileTypes.includes(fileType)) {
+        throw new BadRequestException(`Unsupported file type: ${fileType}`);
+      }
+
+      // ✅ 5 สร้าง Object `Document`
+      const newDocument = this.documentRepository.create({
+        fileName,
+        fileType,
+        fileSize,
+        data: data, // ถ้าไม่มีไฟล์ ให้กำหนดเป็น `null`
+      });
+
+      // ✅ 6 บันทึกลง Database (`LONGBLOB`)
+      return await this.documentRepository.save(newDocument);
+    } catch (error) {
+      console.error('📢 Error while creating document:', error);
+      throw new BadRequestException('Failed to create document');
     }
-
-    // ตรวจสอบประเภทไฟล์
-    const allowedFileTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-    if (!allowedFileTypes.includes(fileType)) {
-      throw new BadRequestException(
-        `Unsupported file type. Allowed types are: ${allowedFileTypes.join(', ')}`,
-      );
-    }
-
-    // ตรวจสอบชื่อไฟล์ (Optional)
-    if (!fileName || fileName.trim() === '') {
-      throw new BadRequestException('File name is required');
-    }
-
-    // สร้างข้อมูลเอกสารใหม่
-    const newDocument = this.documentRepository.create({
-      fileName,
-      fileType,
-      fileSize,
-      data,
-    });
-
-    // บันทึกข้อมูลลงฐานข้อมูล
-    return await this.documentRepository.save(newDocument);
   }
 
   findAll() {
-    return this.documentRepository.find({
-      select: ['id', 'fileName', 'fileType', 'fileSize'],
-    });
+    return this.documentRepository.find();
   }
 
   // Read One (ดึงข้อมูลไฟล์เฉพาะ ID)
