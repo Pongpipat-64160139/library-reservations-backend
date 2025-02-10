@@ -5,8 +5,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Room } from './entities/room.entity';
 import { Repository } from 'typeorm';
 import { Floor } from 'src/floors/entities/floor.entity';
-import { promises } from 'dns';
-
+import * as fs from 'fs';
+import * as path from 'path'; // ✅ ใช้ * as path
+import { extname } from 'path';
 @Injectable()
 export class RoomsService {
   constructor(
@@ -15,38 +16,50 @@ export class RoomsService {
     @InjectRepository(Floor)
     private floorRepository: Repository<Floor>,
   ) {}
-  async create(createRoomDto: CreateRoomDto) {
+  async create(createRoomDto: CreateRoomDto, file?: Express.Multer.File) {
     const { floorId, ...roomData } = createRoomDto;
 
     // ค้นหา Floor id
     const floor = await this.floorRepository.findOne({
       where: { floorId: floorId },
     });
-    if (floor) {
-      // ถ้าเจอ floor id จะทำการเพิ่มข้อมูล New Room
-      const newRoom = await this.roomRepository.create({
-        room_Name: roomData.room_Name,
-        capacity: roomData.capacity,
-        max_hours: roomData.max_hours,
-        room_Status: roomData.room_Status,
-        room_Type: roomData.room_Type,
-        room_Minimum: roomData.room_Minimum,
-        orderFood: roomData.orderFood,
-        floor: floor,
-      });
-      const saveRoom = this.roomRepository.save(newRoom);
-      await this.countRoomsByFloor();
-      return saveRoom;
-    } else {
-      // ถ้าไม่เจอ floor id จะส่ง error 404 Not Found
+    if (!floor) {
       throw new HttpException(
-        {
-          statusCode: HttpStatus.NOT_FOUND,
-          message: 'Floor not found',
-        },
+        { statusCode: HttpStatus.NOT_FOUND, message: 'Floor not found' },
         HttpStatus.NOT_FOUND,
       );
     }
+
+    let imagePath = null;
+
+    // ✅ ถ้ามีไฟล์ ให้บันทึกลงโฟลเดอร์
+    if (file) {
+      const uploadFolder = path.join(process.cwd(), 'uploads', 'rooms');
+      const uniqueFilename = `room-${Date.now()}${path.extname(
+        file.originalname,
+      )}`;
+      const filePath = path.join(uploadFolder, uniqueFilename);
+
+      // ✅ ตรวจสอบว่ามีโฟลเดอร์ไหม ถ้าไม่มีให้สร้าง
+      if (!fs.existsSync(uploadFolder)) {
+        fs.mkdirSync(uploadFolder, { recursive: true });
+      }
+
+      // ✅ บันทึกไฟล์ลงโฟลเดอร์
+      fs.writeFileSync(imagePath, file.buffer);
+
+      // ✅ บันทึก Path ของไฟล์ที่ถูกต้องลง DB (ใช้ Path สำหรับ URL)
+      imagePath = `/uploads/rooms/${uniqueFilename}`;
+    }
+
+    // ✅ สร้างห้องใหม่ และเก็บ Path ของรูปภาพ
+    const newRoom = this.roomRepository.create({
+      ...roomData,
+      floor: floor,
+      imagePath, // ✅ เก็บแค่ path ใน DB
+    });
+
+    return await this.roomRepository.save(newRoom);
   }
 
   async countRoomsByFloor() {
@@ -78,14 +91,64 @@ export class RoomsService {
     });
   }
 
-  async update(id: number, updateRoomDto: UpdateRoomDto) {
-    await this.roomRepository.update(id, updateRoomDto);
-    return this.roomRepository.findOne({
+  async update(
+    id: number,
+    updateRoomDto: Partial<UpdateRoomDto>,
+    file?: Express.Multer.File,
+  ) {
+    const room = await this.roomRepository.findOne({
+      where: { roomId: id },
+      relations: ['floor'],
+    });
+
+    if (!room) {
+      throw new HttpException(
+        { statusCode: HttpStatus.NOT_FOUND, message: 'Room not found' },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    let imagePath = room.imagePath; // ใช้ path เดิม ถ้าไม่มีการอัปโหลดไฟล์ใหม่
+
+    // ✅ ถ้ามีไฟล์ใหม่ ให้บันทึกลงโฟลเดอร์
+    if (file) {
+      const uploadFolder = path.join(process.cwd(), 'uploads', 'rooms');
+      const uniqueFilename = `room-${Date.now()}${path.extname(file.originalname)}`;
+      const filePath = path.join(uploadFolder, uniqueFilename);
+
+      console.log('📂 Upload Folder:', uploadFolder);
+      // ✅ ตรวจสอบว่ามีโฟลเดอร์หรือไม่ ถ้าไม่มีให้สร้าง
+      if (!fs.existsSync(uploadFolder)) {
+        fs.mkdirSync(uploadFolder, { recursive: true });
+      }
+
+      // ✅ ลบรูปเก่าก่อน (ถ้ามี)
+      if (room.imagePath) {
+        const oldFilePath = path.join(__dirname, '..', room.imagePath);
+        if (fs.existsSync(oldFilePath)) {
+          fs.unlinkSync(oldFilePath);
+        }
+      }
+
+      // ✅ บันทึกไฟล์ลงโฟลเดอร์
+      console.log(`Saving file to: ${filePath}`);
+      fs.writeFileSync(filePath, file.buffer);
+      console.log('File saved successfully!');
+
+      // ✅ บันทึก Path ของไฟล์ที่ถูกต้องลง DB (ใช้ Path สำหรับ URL)
+      imagePath = `/uploads/rooms/${uniqueFilename}`;
+    }
+
+    // ✅ ใช้ `Object.assign()` เพื่ออัปเดตข้อมูล
+    Object.assign(room, updateRoomDto, { imagePath });
+
+    await this.roomRepository.save(room);
+
+    return await this.roomRepository.findOne({
       where: { roomId: id },
       relations: ['floor'],
     });
   }
-
   async remove(id: number) {
     const findFloor = await this.roomRepository.findOne({
       where: { roomId: id },
@@ -131,7 +194,7 @@ export class RoomsService {
   async GetRoomByType(roomType: string) {
     const result = await this.roomRepository
       .createQueryBuilder('room')
-      .innerJoinAndSelect('room.floor','floor')
+      .innerJoinAndSelect('room.floor', 'floor')
       .select([
         'room.roomId AS roomId', // ชื่อ Alias: roomId
         'room.room_Name AS roomName', // ชื่อ Alias: roomName

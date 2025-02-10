@@ -9,21 +9,30 @@ import {
   HttpException,
   HttpStatus,
   Query,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { UpdateRoomDto } from './dto/update-room.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('rooms')
 export class RoomsController {
   constructor(private readonly roomsService: RoomsService) {}
 
   @Post()
-  async create(@Body() createRoomDto: CreateRoomDto) {
-    // สร้างห้อง
-    const newRoom = this.roomsService.create(createRoomDto);
-    // อัพเดทห้อง
+  @UseInterceptors(FileInterceptor('file')) // ✅ Interceptor สำหรับรับไฟล์จาก Form-Data
+  async create(
+    @Body() createRoomDto: CreateRoomDto,
+    @UploadedFile() file?: Express.Multer.File, // ✅ รับไฟล์ที่อัปโหลด
+  ) {
+    // ✅ ส่งไฟล์ไปที่ Service เพื่อทำการบันทึก
+    const newRoom = await this.roomsService.create(createRoomDto, file);
+
+    // ✅ อัปเดตจำนวนห้องของ Floor
     await this.roomsService.countRoomsByFloor();
+
     return newRoom;
   }
 
@@ -68,8 +77,13 @@ export class RoomsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateRoomDto: UpdateRoomDto) {
-    return this.roomsService.update(+id, updateRoomDto);
+  @UseInterceptors(FileInterceptor('file')) // ✅ ใช้ Multer จัดการไฟล์ที่อัปโหลด
+  async update(
+    @Param('id') id: string,
+    @Body() updateRoomDto: Partial<UpdateRoomDto>,
+    @UploadedFile() file?: Express.Multer.File, // ✅ รับไฟล์จาก Form-Data
+  ) {
+    return this.roomsService.update(+id, updateRoomDto, file);
   }
 
   @Delete(':id')

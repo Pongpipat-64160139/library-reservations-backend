@@ -38,15 +38,14 @@ export class Room {
   orderFood: string;
 
   @Column()
-  RoomKey:string
+  RoomKey: string;
 
-  @Column({ nullable: true }) // ✅ เพิ่ม Attribute เก็บ Path รูป
-  imagePath: string; // เก็บ URL ของรูปที่อัปโหลดไปที่ Cloudinary
+  @Column({ nullable: true }) // ให้ nullable เพราะบางห้องอาจไม่มีรูป
+  imagePath: string; // เก็บ Path รูปภาพ
 
   @Column()
-  DetailRoom:string
+  DetailRoom: string;
 
-  
   @ManyToOne(() => Floor, (floor) => floor.rooms, {
     nullable: false,
     onDelete: 'CASCADE', // ถ้าลบ Floor จะลบ Room ทั้งหมดที่เชื่อมโยงกัน

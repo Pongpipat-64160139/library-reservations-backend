@@ -37,7 +37,7 @@ export class CreateRoomDto {
   RoomKey: string;
 
   
-  imagePath: string; // เก็บ URL ของรูปที่อัปโหลดไปที่ Cloudinary
+  imagePath: string
   
   DetailRoom: string;
 
