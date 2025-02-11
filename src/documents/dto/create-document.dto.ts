@@ -7,12 +7,5 @@ export class CreateDocumentDto {
 
   @IsOptional()
   @IsString()
-  fileType?: string; // ไม่ต้องรับจาก User แต่ระบบจะดึงจาก `req.file.mimetype`
-
-  @IsOptional()
-  @IsNumber()
-  fileSize?: number; // ไม่ต้องรับจาก User แต่ระบบจะดึงจาก `req.file.size`
-
-  @IsOptional()
-  data?: Buffer; // รองรับไฟล์ Binary
+  documentPath?: string;
 }

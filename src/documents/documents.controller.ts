@@ -22,25 +22,8 @@ export class DocumentsController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    try {
-      if (!file) {
-        throw new BadRequestException('File is required');
-      }
-
-      // ✅ แปลงชื่อไฟล์ให้รองรับ UTF-8
-      const fileName = Buffer.from(file.originalname, 'latin1').toString(
-        'utf-8',
-      );
-
-      // ✅ ส่งไปที่ Service
-      return await this.documentsService.create({
-        ...file,
-        originalname: fileName,
-      });
-    } catch (error) {
-      console.error('📢 Upload Error:', error);
-      throw new BadRequestException('Failed to upload file');
-    }
+    const res = await this.documentsService.create(file);
+    return res;
   }
 
   @Get()
@@ -53,13 +36,13 @@ export class DocumentsController {
     return this.documentsService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateDocumentDto: UpdateDocumentDto,
-  ) {
-    return this.documentsService.update(+id, updateDocumentDto);
-  }
+  // @Patch(':id')
+  // update(
+  //   @Param('id') id: string,
+  //   @Body() updateDocumentDto: UpdateDocumentDto,
+  // ) {
+  //   return this.documentsService.update(+id, updateDocumentDto);
+  // }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
