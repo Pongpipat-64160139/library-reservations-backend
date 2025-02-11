@@ -13,6 +13,8 @@ import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path'; // ✅ ใช้ * as path
 import { extname } from 'path';
+import slugify from 'slugify';
+import * as iconv from 'iconv-lite'; // ✅ ใช้จัดการ Encoding
 @Injectable()
 export class DocumentsService {
   constructor(
@@ -27,8 +29,8 @@ export class DocumentsService {
       );
     }
 
-    // ✅ โฟลเดอร์ที่ใช้เก็บไฟล์
     const uploadFolder = path.join(process.cwd(), 'uploads', 'documents');
+    const fileExtension = path.extname(file.originalname).toLowerCase();
 
     // ✅ ตรวจสอบนามสกุลไฟล์
     const allowedExtensions = [
@@ -45,7 +47,6 @@ export class DocumentsService {
       '.tiff',
       '.ico', // ✅ รองรับรูปภาพทุกประเภท
     ];
-    const fileExtension = path.extname(file.originalname).toLowerCase();
 
     if (!allowedExtensions.includes(fileExtension)) {
       throw new HttpException(
@@ -54,22 +55,35 @@ export class DocumentsService {
       );
     }
 
-    // ✅ สร้างชื่อไฟล์ใหม่ (ไม่ให้ซ้ำ)
-    const uniqueFilename = `file-${Date.now()}${fileExtension}`;
+    // ✅ แปลงชื่อไฟล์ให้รองรับภาษาไทยอย่างถูกต้อง
+    const decodedFileName = iconv.decode(
+      Buffer.from(file.originalname, 'binary'),
+      'utf8',
+    ); // ใช้ utf8
+    const cleanFileName = slugify(decodedFileName, {
+      replacement: '-',
+      remove: /[*+~.()'"!:@]/g, // ลบอักขระพิเศษ
+      lower: false, // ✅ อนุญาตตัวพิมพ์ใหญ่-เล็ก
+      strict: false, // ✅ อนุญาตให้ใช้ภาษาไทย
+      locale: 'th',
+    });
+
+    // ✅ สร้างชื่อไฟล์ที่ปลอดภัย
+    const uniqueFilename = `file-${Date.now()}-${cleanFileName}${fileExtension}`;
     const filePath = path.join(uploadFolder, uniqueFilename);
 
-    // ✅ ตรวจสอบว่ามีโฟลเดอร์ไหม ถ้าไม่มีให้สร้าง
+    // ✅ ตรวจสอบและสร้างโฟลเดอร์หากไม่มี
     if (!fs.existsSync(uploadFolder)) {
       fs.mkdirSync(uploadFolder, { recursive: true });
     }
 
-    // ✅ บันทึกไฟล์ลงโฟลเดอร์แบบ Async
+    // ✅ บันทึกไฟล์ลงโฟลเดอร์
     await fs.promises.writeFile(filePath, file.buffer);
 
     // ✅ บันทึก Path ของไฟล์ลงในฐานข้อมูล
     const newDocument = this.documentRepository.create({
-      fileName: file.originalname, // ใช้ชื่อไฟล์เดิม
-      documentPath: `/uploads/documents/${uniqueFilename}`, // เก็บ path ใน DB
+      fileName: decodedFileName, // ✅ เก็บชื่อไฟล์ภาษาไทยเดิมที่ถูกต้อง
+      documentPath: `/uploads/documents/${uniqueFilename}`, // ✅ เก็บ path สำหรับ URL
     });
 
     return await this.documentRepository.save(newDocument);
@@ -95,7 +109,7 @@ export class DocumentsService {
   async update(
     id: number,
     updateDocumentDto: UpdateDocumentDto,
-    file: Express.Multer.File,
+    file?: Express.Multer.File,
   ) {
     const findDocument = await this.documentRepository.findOne({
       where: { id: id },
@@ -109,11 +123,28 @@ export class DocumentsService {
     }
 
     let documentPath = findDocument.documentPath; // ใช้ path เดิมถ้าไม่มีการอัปโหลดไฟล์ใหม่
+    let fileName = findDocument.fileName; // ใช้ชื่อไฟล์เดิม
 
     // ✅ ถ้ามีไฟล์ใหม่ ให้ลบไฟล์เก่าก่อนแล้วอัปโหลดใหม่
     if (file) {
       const uploadFolder = path.join(process.cwd(), 'uploads', 'documents');
-      const uniqueFilename = `file-${Date.now()}${path.extname(file.originalname)}`;
+
+      // ✅ แปลงชื่อไฟล์ให้รองรับภาษาไทย
+      const decodedFileName = iconv.decode(
+        Buffer.from(file.originalname, 'binary'),
+        'utf8',
+      );
+
+      // ✅ ใช้ slugify ทำให้ชื่อไฟล์ปลอดภัย
+      const cleanFileName = slugify(decodedFileName, {
+        replacement: '-',
+        remove: /[*+~.()'"!:@]/g, // ลบอักขระพิเศษ
+        lower: false, // ✅ อนุญาตให้ตัวพิมพ์ใหญ่-เล็ก
+        strict: false, // ✅ อนุญาตให้ใช้ภาษาไทย
+        locale: 'th',
+      });
+
+      const uniqueFilename = `file-${Date.now()}-${cleanFileName}${path.extname(file.originalname)}`;
       const newFilePath = path.join(uploadFolder, uniqueFilename);
 
       // ✅ ตรวจสอบว่ามีโฟลเดอร์ไหม ถ้าไม่มีให้สร้าง
@@ -134,10 +165,11 @@ export class DocumentsService {
 
       // ✅ อัปเดต path ของไฟล์ใน Database
       documentPath = `/uploads/documents/${uniqueFilename}`;
+      fileName = decodedFileName; // ✅ เก็บชื่อไฟล์เป็น UTF-8
     }
 
     // ✅ ใช้ `Object.assign()` เพื่ออัปเดตเฉพาะค่าที่ส่งมา
-    Object.assign(findDocument, updateDocumentDto, { documentPath });
+    Object.assign(findDocument, updateDocumentDto, { fileName, documentPath });
 
     await this.documentRepository.save(findDocument);
 

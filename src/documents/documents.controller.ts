@@ -36,13 +36,15 @@ export class DocumentsController {
     return this.documentsService.findOne(+id);
   }
 
-  // @Patch(':id')
-  // update(
-  //   @Param('id') id: string,
-  //   @Body() updateDocumentDto: UpdateDocumentDto,
-  // ) {
-  //   return this.documentsService.update(+id, updateDocumentDto);
-  // }
+  @Patch(':id')
+  @UseInterceptors(FileInterceptor('file')) // ✅ รองรับการอัปโหลดไฟล์
+  update(
+    @Param('id') id: string,
+    @Body() updateDocumentDto: UpdateDocumentDto,
+    @UploadedFile() file?: Express.Multer.File, // ✅ รับไฟล์จาก Form-Data
+  ) {
+    return this.documentsService.update(+id, updateDocumentDto, file);
+  }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
