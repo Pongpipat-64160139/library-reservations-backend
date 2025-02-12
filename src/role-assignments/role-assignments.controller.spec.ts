@@ -11,7 +11,9 @@ describe('RoleAssignmentsController', () => {
       providers: [RoleAssignmentsService],
     }).compile();
 
-    controller = module.get<RoleAssignmentsController>(RoleAssignmentsController);
+    controller = module.get<RoleAssignmentsController>(
+      RoleAssignmentsController,
+    );
   });
 
   it('should be defined', () => {

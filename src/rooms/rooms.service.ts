@@ -70,8 +70,8 @@ export class RoomsService {
       .groupBy('room.floor'); // Group ตาม Floor ID
     const result = await query.getRawMany(); // ดึงผลลัพธ์แบบ Raw
     for (const row of result) {
-      let strTonumber = parseInt(row.roomCount, 10); // สร้างตัวแปร strTonumber มาไว้เก็บค่าจำนวนห้องทั้งหมดในแต่ละชั้น
-      let findFloor = await this.floorRepository.findOne({
+      const strTonumber = parseInt(row.roomCount, 10); // สร้างตัวแปร strTonumber มาไว้เก็บค่าจำนวนห้องทั้งหมดในแต่ละชั้น
+      const findFloor = await this.floorRepository.findOne({
         // หาชั้น
         where: { floorId: row.floor },
       });

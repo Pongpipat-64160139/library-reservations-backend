@@ -11,7 +11,9 @@ describe('SpecialRoomBookingsController', () => {
       providers: [SpecialRoomBookingsService],
     }).compile();
 
-    controller = module.get<SpecialRoomBookingsController>(SpecialRoomBookingsController);
+    controller = module.get<SpecialRoomBookingsController>(
+      SpecialRoomBookingsController,
+    );
   });
 
   it('should be defined', () => {

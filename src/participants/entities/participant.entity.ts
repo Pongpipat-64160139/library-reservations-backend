@@ -12,7 +12,7 @@ export class Participant {
   @ManyToOne(() => UserBooking, (userbooking) => userbooking.participants, {
     nullable: false,
     onDelete: 'CASCADE', // ลบ Participant เมื่อ UserBooking ถูกลบ
-    onUpdate:'CASCADE',
+    onUpdate: 'CASCADE',
   })
   userbooking: UserBooking;
 }

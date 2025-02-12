@@ -39,6 +39,4 @@ export class RolesService {
     await this.roleRepository.delete(id);
     return { message: 'Deleted successfully' };
   }
-
- 
 }

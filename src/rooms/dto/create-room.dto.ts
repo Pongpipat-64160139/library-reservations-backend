@@ -36,9 +36,8 @@ export class CreateRoomDto {
 
   RoomKey: string;
 
-  
-  imagePath: string
-  
+  imagePath: string;
+
   DetailRoom: string;
 
   @IsNumber()

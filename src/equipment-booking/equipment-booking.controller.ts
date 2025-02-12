@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { EquipmentBookingService } from './equipment-booking.service';
 import { CreateEquipmentBookingDto } from './dto/create-equipment-booking.dto';
 import { UpdateEquipmentBookingDto } from './dto/update-equipment-booking.dto';
 
 @Controller('equipment-booking')
 export class EquipmentBookingController {
-  constructor(private readonly equipmentBookingService: EquipmentBookingService) {}
+  constructor(
+    private readonly equipmentBookingService: EquipmentBookingService,
+  ) {}
 
   @Post()
   create(@Body() createEquipmentBookingDto: CreateEquipmentBookingDto) {
@@ -23,7 +33,10 @@ export class EquipmentBookingController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateEquipmentBookingDto: UpdateEquipmentBookingDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateEquipmentBookingDto: UpdateEquipmentBookingDto,
+  ) {
     return this.equipmentBookingService.update(+id, updateEquipmentBookingDto);
   }
 

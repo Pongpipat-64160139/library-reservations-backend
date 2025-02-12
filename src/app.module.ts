@@ -32,7 +32,6 @@ import { EquipmentsModule } from './equipments/equipments.module';
 import { EquipmentBookingModule } from './equipment-booking/equipment-booking.module';
 import { Equipment } from './equipments/entities/equipment.entity';
 import { EquipmentBooking } from './equipment-booking/entities/equipment-booking.entity';
-import { HolidaysService } from './holidays/holidays.service';
 import { HolidaysModule } from './holidays/holidays.module';
 import { HttpModule } from '@nestjs/axios';
 import { Holiday } from './holidays/entities/holiday.entity';
@@ -44,6 +43,7 @@ import { Holiday } from './holidays/entities/holiday.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
+      password: 'Fah#piigtryz12',
       database: 'buu_library_booking',
       entities: [
         User,

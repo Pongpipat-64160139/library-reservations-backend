@@ -11,7 +11,9 @@ describe('EquipmentBookingController', () => {
       providers: [EquipmentBookingService],
     }).compile();
 
-    controller = module.get<EquipmentBookingController>(EquipmentBookingController);
+    controller = module.get<EquipmentBookingController>(
+      EquipmentBookingController,
+    );
   });
 
   it('should be defined', () => {

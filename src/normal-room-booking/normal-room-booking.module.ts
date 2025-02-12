@@ -8,7 +8,14 @@ import { UserBooking } from 'src/user-bookings/entities/user-booking.entity';
 import { SpecialRoomBooking } from 'src/special-room-bookings/entities/special-room-booking.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([NormalRoomBooking, Room, UserBooking,SpecialRoomBooking])],
+  imports: [
+    TypeOrmModule.forFeature([
+      NormalRoomBooking,
+      Room,
+      UserBooking,
+      SpecialRoomBooking,
+    ]),
+  ],
   exports: [NormalRoomBookingService],
   controllers: [NormalRoomBookingController],
   providers: [NormalRoomBookingService],

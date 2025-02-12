@@ -1,10 +1,10 @@
 import {
-  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,7 +12,6 @@ import { Document } from './entities/document.entity';
 import { Repository } from 'typeorm';
 import * as fs from 'fs';
 import * as path from 'path'; // ✅ ใช้ * as path
-import { extname } from 'path';
 import slugify from 'slugify';
 import * as iconv from 'iconv-lite'; // ✅ ใช้จัดการ Encoding
 @Injectable()

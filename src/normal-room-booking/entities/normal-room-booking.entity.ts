@@ -52,9 +52,10 @@ export class NormalRoomBooking {
   reason: string;
 
   @Column({ type: 'time', nullable: true }) // เอา default ออก
-  @Transform(({ value }) => (value ? dayjs(value, 'HH:mm:ss').format('HH:mm') : null)) 
+  @Transform(({ value }) =>
+    value ? dayjs(value, 'HH:mm:ss').format('HH:mm') : null,
+  )
   cancelTime: string | null;
-  
 
   @ManyToOne(() => Room, (room) => room.normalRoomBookings, {
     nullable: false,

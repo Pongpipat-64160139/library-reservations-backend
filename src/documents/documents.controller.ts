@@ -6,11 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  BadRequestException,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
 import { DocumentsService } from './documents.service';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CreateDocumentDto } from './dto/create-document.dto';
 import { UpdateDocumentDto } from './dto/update-document.dto';
 import { FileInterceptor } from '@nestjs/platform-express';

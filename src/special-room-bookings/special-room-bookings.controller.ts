@@ -1,11 +1,21 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { SpecialRoomBookingsService } from './special-room-bookings.service';
 import { CreateSpecialRoomBookingDto } from './dto/create-special-room-booking.dto';
 import { UpdateSpecialRoomBookingDto } from './dto/update-special-room-booking.dto';
 
 @Controller('special-room-bookings')
 export class SpecialRoomBookingsController {
-  constructor(private readonly specialRoomBookingsService: SpecialRoomBookingsService) {}
+  constructor(
+    private readonly specialRoomBookingsService: SpecialRoomBookingsService,
+  ) {}
 
   @Post()
   create(@Body() createSpecialRoomBookingDto: CreateSpecialRoomBookingDto) {
@@ -23,8 +33,14 @@ export class SpecialRoomBookingsController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSpecialRoomBookingDto: UpdateSpecialRoomBookingDto) {
-    return this.specialRoomBookingsService.update(+id, updateSpecialRoomBookingDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateSpecialRoomBookingDto: UpdateSpecialRoomBookingDto,
+  ) {
+    return this.specialRoomBookingsService.update(
+      +id,
+      updateSpecialRoomBookingDto,
+    );
   }
 
   @Delete(':id')
