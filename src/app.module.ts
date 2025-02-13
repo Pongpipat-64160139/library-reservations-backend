@@ -43,7 +43,6 @@ import { Holiday } from './holidays/entities/holiday.entity';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: 'Fah#piigtryz12',
       database: 'buu_library_booking',
       entities: [
         User,
