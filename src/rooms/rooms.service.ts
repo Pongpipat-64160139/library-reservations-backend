@@ -7,7 +7,6 @@ import { Repository } from 'typeorm';
 import { Floor } from 'src/floors/entities/floor.entity';
 import * as fs from 'fs';
 import * as path from 'path'; // ✅ ใช้ * as path
-import { extname } from 'path';
 @Injectable()
 export class RoomsService {
   constructor(
@@ -208,6 +207,35 @@ export class RoomsService {
       ])
       .where('room.room_Type = :roomType', { roomType }) // เงื่อนไข
       .getRawMany(); // ดึงผลลัพธ์ในรูปแบบ Raw
+    return result;
+  }
+
+  async getRoomByNameAndFloorId(floor: number, roomName: string) {
+    console.log('Floor number:', floor, 'Room Name:', roomName);
+    // ✅ ดำเนินการ Query ด้วย floorNumber และ roomName ที่ถูกต้อง
+    const result = await this.roomRepository
+      .createQueryBuilder('room')
+      .innerJoinAndSelect('room.floor', 'floor')
+      .select([
+        'room.roomId AS roomId',
+        'room.room_Name AS roomName',
+        'room.capacity AS capacity',
+        'room.max_hours AS maxHours',
+        'room.room_Status AS roomStatus',
+        'room.room_Type AS roomType',
+        'room.room_Minimum AS roomMinimum',
+        'room.orderFood AS roomOrder',
+        'room.RoomKey AS roomKey',
+        'room.imagePath AS imagePath',
+        'room.DetailRoom AS detailRoom',
+      ])
+      // ✅ เปลี่ยนจาก room_Name: roomName เป็น roomName: roomName
+      .where('room.room_Name = :roomName', { roomName: roomName })
+      // ✅ เปลี่ยนจาก floorNumber: floor เป็น floor: floor
+      .andWhere('floor.floor_Number = :floor', { floor: floor })
+      .getRawMany();
+
+    console.log(result);
     return result;
   }
 }

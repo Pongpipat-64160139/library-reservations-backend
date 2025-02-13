@@ -1,11 +1,5 @@
 import { Room } from 'src/rooms/entities/room.entity';
-import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  Timestamp,
-} from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import * as dayjs from 'dayjs';
 import { Transform } from 'class-transformer';
 @Entity()

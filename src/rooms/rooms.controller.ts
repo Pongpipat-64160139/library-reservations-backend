@@ -11,6 +11,7 @@ import {
   Query,
   UseInterceptors,
   UploadedFile,
+  BadRequestException,
 } from '@nestjs/common';
 import { RoomsService } from './rooms.service';
 import { CreateRoomDto } from './dto/create-room.dto';
@@ -69,6 +70,23 @@ export class RoomsController {
         HttpStatus.NOT_FOUND,
       );
     }
+  }
+
+  @Get('/selectedRoom')
+  selectedRoom(
+    @Query('floorNumber') floorNumber: string, // เปลี่ยนเป็น string
+    @Query('roomName') roomName: string,
+  ) {
+    // ✅ แปลง floorNumber เป็น number ก่อนส่งไป Service
+    const parsedFloorNumber = Number(floorNumber);
+    if (isNaN(parsedFloorNumber)) {
+      throw new Error('floorNumber must be a valid number');
+    }
+
+    return this.roomsService.getRoomByNameAndFloorId(
+      parsedFloorNumber,
+      roomName,
+    );
   }
 
   @Get(':id')
