@@ -1,15 +1,16 @@
 import {
   Controller,
   Get,
-  Post,
   Body,
   Patch,
   Param,
-  Delete,
   HttpException,
   HttpStatus,
+  Query,
+  Post,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -17,22 +18,20 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
-  async create(@Body() createUserDto: CreateUserDto) {
-    try {
-      const user = await this.usersService.create(createUserDto);
-      return { message: 'Create user successfully!!', data: user };
-    } catch (error) {
-      if (error.code == 'ER_DUP_ENTRY') {
-        throw new HttpException(
-          {
-            statusCode: HttpStatus.CONFLICT,
-            message: `Duplicate value detected : ${error.sqlMessage} is already exists in the entity users.`,
-          },
-          HttpStatus.CONFLICT,
-        );
-      }
-    }
+  @Post('/login')
+  async checkAndSave(
+    @Query('username') username: string,
+    @Query('password') password: string,
+  ) {
+    return await this.usersService.checkAndSaveUser(username, password);
+  }
+
+  @Get('/CheckPersonsLogin')
+  checkLogin(
+    @Query('username') username: string,
+    @Query('password') password: string,
+  ) {
+    return this.usersService.checkPersonLogin(username, password);
   }
 
   @Get()
@@ -59,11 +58,5 @@ export class UsersController {
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    this.usersService.remove(+id);
-    return 'Deleted successfully';
   }
 }

@@ -1,15 +1,11 @@
-import {
-  BadRequestException,
-  HttpException,
-  HttpStatus,
-  Injectable,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import axios from 'axios';
 
 @Injectable()
 export class UsersService {
@@ -17,17 +13,56 @@ export class UsersService {
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) {}
-  async create(createUserDto: CreateUserDto) {
+
+  async checkPersonLogin(username: string, password: string) {
+    const encodedUsername = Buffer.from(username).toString('base64');
+    const encodedPassword = Buffer.from(password).toString('base64');
+
+    const apiUrl = `https://info.lib.buu.ac.th/apilib/Persons/CheckPersonsLogin/${encodedUsername}/${encodedPassword}`;
     try {
-      const newUser = await this.userRepository.create(createUserDto);
-      return this.userRepository.save(newUser);
+      const response = await axios.get(apiUrl);
+      return response.data;
     } catch (error) {
-      if (error) {
-        throw new Error(error.message);
-      }
+      throw new Error(
+        `Failed to call external API: ${error.response?.status} ${error.response?.statusText}`,
+      );
     }
   }
 
+  async checkAndSaveUser(username: string, password: string) {
+    try {
+      const checkLoginData = await this.checkPersonLogin(username, password);
+
+      if (!checkLoginData) {
+        throw new HttpException(
+          'Username or Password is incorrect',
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+
+      const existingUser = await this.userRepository.findOne({
+        where: { Username: checkLoginData.Username },
+      });
+
+      if (existingUser) {
+        throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      }
+
+      const saveloginDate = new Date().toISOString().split('T')[0];
+
+      const newUser = this.userRepository.create({
+        lastLoginAt: saveloginDate,
+        ...checkLoginData.data,
+      });
+
+      return await this.userRepository.save(newUser);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
   findAll() {
     return this.userRepository.find({
       relations: ['userBookings', 'confirmations', 'roleAssignments'],
@@ -37,23 +72,23 @@ export class UsersService {
   findOne(id: number) {
     return this.userRepository.findOne({ where: { userId: id } });
   }
+  async update(id: number, updateUserDto: Partial<UpdateUserDto>) {
+    try {
+      const findUser = await this.userRepository.findOne({
+        where: { userId: id },
+      });
 
-  exitsUsername(username: string) {
-    return this.userRepository.find({
-      where: { username: username },
-    });
-  }
-  exitsEmail(email: string) {
-    return this.userRepository.find({
-      where: { email: email },
-    });
-  }
-  async update(id: number, updateUserDto: UpdateUserDto) {
-    const updateUser = await this.userRepository.update(id, updateUserDto);
-    return this.userRepository.findOne({ where: { userId: id } });
-  }
+      if (!findUser) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
 
-  remove(id: number) {
-    return this.userRepository.delete({ userId: id });
+      Object.assign(findUser, updateUserDto);
+      return await this.userRepository.save(findUser);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Internal Server Error',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

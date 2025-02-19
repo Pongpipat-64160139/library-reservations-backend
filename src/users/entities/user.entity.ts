@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { IsEmail, IsNotEmpty, IsOptional } from 'class-validator';
 import { Confirmation } from 'src/confirmations/entities/confirmation.entity';
 import { RoleAssignment } from 'src/role-assignments/entities/role-assignment.entity';
@@ -16,24 +17,50 @@ export class User {
   @PrimaryGeneratedColumn()
   userId: number;
 
-  @Column({ nullable: false })
-  @Index('unique_username', { unique: true })
-  username: string;
+  @Column()
+  firstname: string;
 
   @Column()
-  @IsNotEmpty()
-  password: string;
+  lastname: string;
 
-  @Column({ length: 255 })
-  firstName: string;
-
-  @Column({ length: 255 })
-  lastName: string;
+  @Column({ unique: true })
+  @Index('unique_username', { unique: true })
+  Username: string;
 
   @Column({ nullable: true })
-  @Index('unique_email', { unique: true })
+  Prefix_Name: string;
+
+  @Column({ unique: true })
   @IsEmail()
-  email: string;
+  @Index('unique_email', { unique: true })
+  Email: string;
+
+  @Column({ nullable: true })
+  Phone: string;
+
+  @Column({ nullable: true })
+  Department_Name: string;
+
+  @Column({ nullable: true })
+  Position_Name: string;
+
+  @Column({ nullable: true })
+  TypePersons: string;
+
+  @Column({ nullable: true })
+  Agency: string;
+
+  @Column({ nullable: true })
+  Status: string;
+
+  @Column({ nullable: true })
+  ManagementPositionName: string;
+
+  @Column()
+  Ldap: number;
+
+  @Column({ nullable: true })
+  lastLoginAt: string; // บันทึกวันที่ login ล่าสุดจาก API
 
   @OneToMany(() => RoleAssignment, (roleAss) => roleAss.user, {
     cascade: true,

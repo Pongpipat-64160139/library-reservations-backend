@@ -10,7 +10,6 @@ import { Room } from 'src/rooms/entities/room.entity';
 import { DataSource, Repository } from 'typeorm';
 import { NormalRoomBooking } from './entities/normal-room-booking.entity';
 import { SpecialRoomBooking } from 'src/special-room-bookings/entities/special-room-booking.entity';
-import { query } from 'express';
 
 @Injectable()
 export class NormalRoomBookingService {

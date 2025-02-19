@@ -1,11 +1,5 @@
 import { SpecialRoomBooking } from 'src/special-room-bookings/entities/special-room-booking.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  OneToOne,
-  CreateDateColumn,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 export class Document {
@@ -18,10 +12,6 @@ export class Document {
   @Column()
   documentPath: string;
 
-  @OneToOne(() => SpecialRoomBooking, (srb) => srb.document, {
-    nullable: false,
-    onDelete: 'CASCADE', // ลบ Document เมื่อ SpecialRoomBooking ถูกลบ
-    onUpdate: 'CASCADE', // อัปเดตเมื่อ SpecialRoomBooking ถูกอัปเดต
-  })
-  srb: SpecialRoomBooking;
+  @OneToMany(() => SpecialRoomBooking, (srb) => srb.document)
+  bookings: SpecialRoomBooking[];
 }

@@ -9,7 +9,6 @@ import {
   JoinColumn,
   ManyToOne,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as dayjs from 'dayjs';
@@ -65,8 +64,10 @@ export class SpecialRoomBooking {
   )
   cancelTime: string | null;
 
-  @OneToOne(() => Document, (doc) => doc.srb, {
-    cascade: true,
+  @ManyToOne(() => Document, (doc) => doc.bookings, {
+    nullable: true, // ให้สามารถไม่มีเอกสารได้
+    onDelete: 'SET NULL', // ลบ Document แล้วให้ documentId เป็น NULL
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'documentId' })
   document: Document;
