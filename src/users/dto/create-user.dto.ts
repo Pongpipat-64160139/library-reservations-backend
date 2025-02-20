@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsEmail,
   IsNotEmpty,
   IsNumber,
@@ -64,7 +63,7 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'Ldap is required' })
   Ldap: number;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
   lastLoginAt?: string;
 

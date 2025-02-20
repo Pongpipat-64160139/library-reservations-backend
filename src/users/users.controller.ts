@@ -19,11 +19,16 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post('/login')
-  async checkAndSave(
-    @Query('username') username: string,
-    @Query('password') password: string,
-  ) {
-    return await this.usersService.checkAndSaveUser(username, password);
+  async checkAndSave(@Body() body: { username: string; password: string }) {
+    return await this.usersService.checkAndSaveUser(
+      body.username,
+      body.password,
+    );
+  }
+
+  @Get('/findUserName')
+  findUserNameUser(@Query('username') username: string) {
+    return this.usersService.findUserNameUser(username);
   }
 
   @Get('/CheckPersonsLogin')
@@ -57,6 +62,10 @@ export class UsersController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+    return this.usersService.update(
+      +id,
+      updateUserDto,
+      updateUserDto.lastLoginAt,
+    );
   }
 }

@@ -167,7 +167,7 @@ export class NormalRoomBookingService {
       .innerJoinAndSelect('userBooking.user', 'user') // Join ตาราง User
       .select([
         'user.userId as userId',
-        'user.firstName AS user_name',
+        'user.Username AS user_name',
         'room.roomId AS room_id',
         'normal_room_booking.nrbId AS normal_room_booking',
         'DATE_FORMAT(normal_room_booking.startDate, "%Y-%m-%d") AS start_date', // แปลงวันที่เป็น yyyy-mm-dd

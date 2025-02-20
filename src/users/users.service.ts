@@ -45,17 +45,17 @@ export class UsersService {
       });
 
       if (existingUser) {
-        throw new HttpException('User already exists', HttpStatus.CONFLICT);
+        return 0;
+      } else {
+        const saveloginDate = new Date().toISOString().split('T')[0];
+
+        const newUser = this.userRepository.create({
+          lastLoginAt: saveloginDate.toString(),
+          ...checkLoginData.data,
+        });
+
+        return await this.userRepository.save(newUser);
       }
-
-      const saveloginDate = new Date().toISOString().split('T')[0];
-
-      const newUser = this.userRepository.create({
-        lastLoginAt: saveloginDate,
-        ...checkLoginData.data,
-      });
-
-      return await this.userRepository.save(newUser);
     } catch (error) {
       throw new HttpException(
         error.message || 'Internal Server Error',
@@ -72,7 +72,20 @@ export class UsersService {
   findOne(id: number) {
     return this.userRepository.findOne({ where: { userId: id } });
   }
-  async update(id: number, updateUserDto: Partial<UpdateUserDto>) {
+  async findUserNameUser(username: string) {
+    const response = await this.userRepository.findOne({
+      where: { Username: username },
+    });
+    if (!response) {
+      throw new HttpException('Username not found', HttpStatus.NOT_FOUND);
+    }
+    return response;
+  }
+  async update(
+    id: number,
+    updateUserDto: Partial<UpdateUserDto>,
+    lastLoginAt?: string, // ทำให้เป็น optional
+  ) {
     try {
       const findUser = await this.userRepository.findOne({
         where: { userId: id },
@@ -82,7 +95,13 @@ export class UsersService {
         throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
-      Object.assign(findUser, updateUserDto);
+      // ถ้ามีค่า lastLoginAt, รวมเป็น property object
+      if (lastLoginAt) {
+        Object.assign(findUser, updateUserDto, { lastLoginAt });
+      } else {
+        Object.assign(findUser, updateUserDto);
+      }
+
       return await this.userRepository.save(findUser);
     } catch (error) {
       throw new HttpException(
