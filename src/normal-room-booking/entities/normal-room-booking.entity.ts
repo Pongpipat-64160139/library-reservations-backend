@@ -3,7 +3,6 @@ import { UserBooking } from 'src/user-bookings/entities/user-booking.entity';
 import {
   Column,
   Entity,
-  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,

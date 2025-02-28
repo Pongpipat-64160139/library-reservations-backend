@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  frontend:
+    build:
+      context: ../library-reservation-frontend # ✅ ใช้ Path แบบ Relative
+      dockerfile: Dockerfile  # ✅ ระบุ Dockerfile ของ Frontend
+    container_name: frontend_roombooking
+    restart: always
+    ports:
+      - "3001:80"  # ✅ Frontend เปิดที่ 3001
+    networks:
+      - backend_networks  # ✅ ใช้ Network ร่วมกับ Backend
+    depends_on:
+      - backend  # ✅ รันหลังจาก Backend ทำงาน
+
   backend:
     build:
       context: .
@@ -55,6 +68,6 @@ services:
 
 networks:
   backend_networks:
-
+  
 volumes:
   mysql_data:
