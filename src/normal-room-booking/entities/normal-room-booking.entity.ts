@@ -3,6 +3,7 @@ import { UserBooking } from 'src/user-bookings/entities/user-booking.entity';
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -47,8 +48,9 @@ export class NormalRoomBooking {
   @Column()
   details: string;
 
-  @Column()
-  reason: string;
+  @Column({ nullable: true })
+  reason: string | null;
+  
 
   @Column({ type: 'time', nullable: true }) // เอา default ออก
   @Transform(({ value }) =>

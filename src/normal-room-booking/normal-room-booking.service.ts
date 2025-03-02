@@ -31,11 +31,14 @@ export class NormalRoomBookingService {
     });
 
     if (!room) {
-      // โยนข้อผิดพลาดเมื่อไม่พบ Room
       throw new NotFoundException(`Room with ID ${roomId} not found`);
     }
 
     try {
+      // อัพเดทสถานะห้องเป็น "จอง"
+      room.room_Status = 'จอง';
+      await this.roomRepository.save(room);
+
       // สร้าง NormalRoomBooking ใหม่
       const newNRBBooking = this.normalRoomBookingRepository.create({
         startDate: dataNormal.startDate,
@@ -46,16 +49,13 @@ export class NormalRoomBookingService {
         repeat_End_Flag: dataNormal.repeat_End_Flag,
         details: dataNormal.details,
         reseve_status: dataNormal.reseve_status,
-        roomBooking: room, // เชื่อมความสัมพันธ์กับ Room
+        roomBooking: room,
       });
 
-      // บันทึกข้อมูลลงฐานข้อมูล
-      const savedRoomBooking =
-        await this.normalRoomBookingRepository.save(newNRBBooking);
+      const savedRoomBooking = await this.normalRoomBookingRepository.save(newNRBBooking);
+      return savedRoomBooking;
 
-      return savedRoomBooking; // ส่งผลลัพธ์กลับ
     } catch (error) {
-      // จัดการข้อผิดพลาดที่เกิดขึ้นระหว่างการบันทึก
       throw new InternalServerErrorException(
         'Failed to create normal room booking',
         error.message,
@@ -65,7 +65,7 @@ export class NormalRoomBookingService {
 
   findAll() {
     return this.normalRoomBookingRepository.find({
-      relations: ['roomBooking'],
+      relations: ['roomBooking', 'userBookings', 'userBookings.user'],
     });
   }
 
@@ -87,12 +87,11 @@ export class NormalRoomBookingService {
 
   async update(
     id: number,
-    updateNormalRoomBookingDto: Partial<UpdateNormalRoomBookingDto>, // ✅ Partial ให้รองรับอัปเดตบางฟิลด์
+    updateNormalRoomBookingDto: Partial<UpdateNormalRoomBookingDto>,
   ) {
-    // ค้นหาข้อมูลที่ต้องการอัปเดต
     const findBooking = await this.normalRoomBookingRepository.findOne({
       where: { nrbId: id },
-      relations: ['roomBooking'], // โหลดข้อมูลความสัมพันธ์
+      relations: ['roomBooking'],
     });
 
     if (!findBooking) {
@@ -100,7 +99,7 @@ export class NormalRoomBookingService {
     }
 
     try {
-      // ✅ ถ้ามีการอัปเดต roomId ต้องไปดึงข้อมูลห้องก่อน
+      // ตรวจสอบการเปลี่ยนแปลง roomId (ถ้ามี)
       if (updateNormalRoomBookingDto.roomId) {
         const room = await this.roomRepository.findOne({
           where: { roomId: updateNormalRoomBookingDto.roomId },
@@ -112,16 +111,26 @@ export class NormalRoomBookingService {
           );
         }
 
-        findBooking.roomBooking = room; // ✅ อัปเดต Room ถ้ามีการส่งมา
+        findBooking.roomBooking = room;
       }
 
-      // ✅ ใช้ Object.assign() เพื่ออัปเดตเฉพาะค่าที่ส่งมา
-      Object.assign(findBooking, updateNormalRoomBookingDto);
+      // ตรวจสอบการเปลี่ยนแปลงสถานะการจอง
+      if (updateNormalRoomBookingDto.reseve_status) {
+        // อัพเดทสถานะห้องตามสถานะการจอง
+        if (updateNormalRoomBookingDto.reseve_status === 'ยกเลิก') {
+          findBooking.roomBooking.room_Status = 'ว่าง';
+        } else if (updateNormalRoomBookingDto.reseve_status === 'อนุมัติ') {
+          findBooking.roomBooking.room_Status = 'ไม่ว่าง';
+        }
+        // บันทึกการเปลี่ยนแปลงสถานะห้อง
+        await this.roomRepository.save(findBooking.roomBooking);
+      }
 
-      // ✅ บันทึกข้อมูลที่อัปเดต
+      // อัพเดทข้อมูลการจอง
+      Object.assign(findBooking, updateNormalRoomBookingDto);
       await this.normalRoomBookingRepository.save(findBooking);
 
-      // ✅ คืนค่าข้อมูลที่อัปเดตพร้อมความสัมพันธ์
+      // ส่งคืนข้อมูลที่อัพเดทแล้ว
       return await this.normalRoomBookingRepository.findOne({
         where: { nrbId: id },
         relations: ['roomBooking'],
@@ -192,7 +201,9 @@ export class NormalRoomBookingService {
       .innerJoin('userBooking.user', 'user')
       .select([
         'normal_room_booking.nrbId AS reserved_Id',
-        'user.userName AS user_name',
+        'user.userName as user_name',
+        'user.firstname AS fname',
+        'user.lastname AS lname',
         'floor.floor_Number AS floor_number',
         'room.room_name AS room_name',
         'DATE_FORMAT(normal_room_booking.startDate, "%d-%m-%Y") AS start_date',
@@ -217,7 +228,9 @@ export class NormalRoomBookingService {
       .innerJoin('room.floor', 'floor')
       .select([
         'special_room_booking.srb_Id AS reserved_Id',
-        'user.userName AS user_name',
+        'user.userName as user_name',
+        'user.firstname AS fname',
+        'user.lastname AS lname',
         'floor.floor_Number AS floor_number',
         'room.room_name AS room_name',
         'DATE_FORMAT(special_room_booking.start_Date, "%d-%m-%Y") AS start_date',
